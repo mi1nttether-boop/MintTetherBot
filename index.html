@@ -222,6 +222,17 @@
       outline: none;
     }
 
+    .ref-box {
+      background: #0d141d;
+      border: 1px solid #263649;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: #93c5fd;
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+
     .status-msg {
       margin-top: 10px;
       font-size: 13px;
@@ -257,17 +268,17 @@
       max-width: 520px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
     }
 
     .nav-btn {
       background: transparent;
       border: none;
       color: #9ca3af;
-      padding: 6px 4px;
+      padding: 6px 2px;
       border-radius: 10px;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -384,6 +395,23 @@
         <div class="status-msg" id="bonusStatus"></div>
       </div>
     </div>
+
+    <div id="tab-ref" class="tab-page">
+      <div class="card">
+        <div class="section-title">Реферальная программа</div>
+        <div class="subtitle" style="margin-bottom: 12px;">
+          Делитесь своей ссылкой и приглашайте друзей в MintTether.
+        </div>
+        <div class="stat-box" style="margin-bottom: 12px;">
+          <div class="stat-title">Приглашено рефералов</div>
+          <div class="stat-main" id="refCountDisplay">0</div>
+        </div>
+        <label>Ваша реферальная ссылка</label>
+        <div class="ref-box" id="refLinkBox">https://t.me/MintTetherBot?start=ref_5224967757</div>
+        <button class="btn btn-blue" id="copyRefBtn">📋 Скопировать ссылку</button>
+        <div class="status-msg" id="refStatus"></div>
+      </div>
+    </div>
   </div>
 
   <nav class="bottom-nav">
@@ -393,6 +421,7 @@
       <button class="nav-btn" data-tab="tab-deposit">💳 Депозит</button>
       <button class="nav-btn" data-tab="tab-withdraw">💸 Вывод</button>
       <button class="nav-btn" data-tab="tab-bonus">🎁 Бонус</button>
+      <button class="nav-btn" data-tab="tab-ref">👥 Реф</button>
     </div>
   </nav>
 
@@ -404,6 +433,7 @@
     }
 
     const API_BASE_URL = "https://warm-brooms-stay.loca.lt";
+    const BOT_USERNAME = "MintTetherBot";
     const CYCLE_MINUTES = 20;
     const BASE_RATE_PER_20M = 0.00002;
     const MIN_WITHDRAW = 35;
@@ -421,6 +451,8 @@
     const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
     const uid = String((tgUser && tgUser.id) || "5224967757");
     const userLabel = tgUser ? (tgUser.username ? "@" + tgUser.username : tgUser.first_name || "") : "";
+    const startParam = String((tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "");
+    const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${uid}`;
     const STORAGE_KEY = "minttether_state_" + uid;
 
     let state = {
@@ -428,6 +460,8 @@
       minedPending: 0,
       lastTick: Date.now(),
       lastDailyBonus: 0,
+      referrals: 0,
+      invitedBy: null,
       miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
     };
 
@@ -441,6 +475,8 @@
           minedPending: Number.isFinite(Number(parsed.minedPending)) ? Math.max(0, Number(parsed.minedPending)) : 0,
           lastTick: Number.isFinite(Number(parsed.lastTick)) && Number(parsed.lastTick) > 0 ? Number(parsed.lastTick) : Date.now(),
           lastDailyBonus: Number.isFinite(Number(parsed.lastDailyBonus)) ? Number(parsed.lastDailyBonus) : 0,
+          referrals: Number(parsed.referrals) || 0,
+          invitedBy: parsed.invitedBy || null,
           miners: {
             nano: Number(parsed.miners && parsed.miners.nano) || 0,
             core: Number(parsed.miners && parsed.miners.core) || 0,
@@ -525,6 +561,30 @@
       document.getElementById("progressFill").style.width = pct + "%";
       document.getElementById("minersSummary").textContent =
         `Куплено майнеров: ${getTotalMinersCount()} • Скорость: ${rate20m.toFixed(5)} USDT / 20 мин`;
+      document.getElementById("refCountDisplay").textContent = String(state.referrals || 0);
+      document.getElementById("refLinkBox").textContent = refLink;
+    }
+
+    async function registerReferralIfNeeded() {
+      if (!startParam.startsWith("ref_") || state.invitedBy) return;
+      const inviterId = startParam.slice(4).trim();
+      if (!inviterId || inviterId === uid) return;
+
+      try {
+        const res = await fetch(API_BASE_URL + "/api/ref", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "bypass-tunnel-reminder": "true"
+          },
+          body: JSON.stringify({ userId: uid, inviterId })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          state.invitedBy = inviterId;
+          saveState();
+        }
+      } catch (_) {}
     }
 
     async function submitRequest(endpoint, bodyObj, statusEl, btn) {
@@ -551,7 +611,7 @@
         try {
           data = JSON.parse(text);
         } catch (_) {
-          throw new Error("Сервер или localtunnel вернул не JSON. Откройте тунель в браузере один раз или проверьте консоль.");
+          throw new Error("Сервер или localtunnel вернул не JSON. Проверьте консоль и тунель.");
         }
 
         if (!res.ok || !data.ok) {
@@ -605,6 +665,27 @@
       statusEl.textContent = "Начислено +0.001 USDT! Следующий бонус через 24 часа.";
     });
 
+    document.getElementById("copyRefBtn").addEventListener("click", async () => {
+      const statusEl = document.getElementById("refStatus");
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(refLink);
+        } else {
+          const tmp = document.createElement("textarea");
+          tmp.value = refLink;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand("copy");
+          document.body.removeChild(tmp);
+        }
+        statusEl.className = "status-msg";
+        statusEl.textContent = "Реферальная ссылка скопирована!";
+      } catch (_) {
+        statusEl.className = "status-msg err";
+        statusEl.textContent = "Скопируйте ссылку вручную из поля выше.";
+      }
+    });
+
     document.getElementById("depSubmitBtn").addEventListener("click", (e) => {
       const statusEl = document.getElementById("depStatus");
       const network = document.getElementById("depNetwork").value;
@@ -650,6 +731,7 @@
     tickMining();
     renderShop();
     renderUI();
+    registerReferralIfNeeded();
     setInterval(tickMining, 1000);
   </script>
 </body>
