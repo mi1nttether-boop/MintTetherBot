@@ -365,7 +365,7 @@
           <label for="depAmount">Сумма (USDT)</label>
           <input type="number" id="depAmount" min="1" step="0.01" placeholder="Например, 10" />
         </div>
-        <button class="btn btn-green" id="depSubmitBtn">Сформировать заявку на пополнение</button>
+        <button class="btn btn-green" id="depSubmitBtn">Отправить заявку на пополнение</button>
         <div class="status-msg" id="depStatus"></div>
       </div>
     </div>
@@ -389,7 +389,7 @@
           <label for="wdrAmount">Сумма вывода (USDT)</label>
           <input type="number" id="wdrAmount" min="35" step="0.01" placeholder="Минимум 35.00" />
         </div>
-        <button class="btn btn-blue" id="wdrSubmitBtn">Сформировать заявку на вывод</button>
+        <button class="btn btn-blue" id="wdrSubmitBtn">Отправить заявку на вывод</button>
         <div class="status-msg" id="wdrStatus"></div>
       </div>
     </div>
@@ -610,24 +610,35 @@
       return ok;
     }
 
-    async function prepareBotRequest(textCommand, statusEl) {
+    async function submitToBot(payloadObj, textCommand, statusEl) {
+      let sent = false;
+      try {
+        if (tg && typeof tg.sendData === "function") {
+          tg.sendData(JSON.stringify({ userId: uid, ...payloadObj }));
+          sent = true;
+        }
+      } catch (_) {}
+
       let copied = false;
       try {
         copied = await copyText(textCommand);
       } catch (_) {}
 
-      const botUrl = `https://t.me/${BOT_USERNAME}`;
+      const shareUrl = `https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(textCommand)}`;
       statusEl.className = "status-msg";
       statusEl.innerHTML =
-        (copied ? "Код заявки скопирован в буфер! " : "Скопируйте код заявки: ") +
+        (sent ? "Данные отправлены боту. " : "") +
+        (copied ? "Код заявки скопирован в буфер. " : "") +
         `<br><code style="color:#93c5fd;">${textCommand}</code>` +
-        `<br><a href="${botUrl}" style="color:#34d399;font-weight:700;">👉 Открыть @${BOT_USERNAME} и вставить</a>`;
+        `<br><a href="${shareUrl}" style="color:#34d399;font-weight:700;">👉 Открыть @${BOT_USERNAME}</a>`;
 
       setTimeout(() => {
-        if (tg && typeof tg.openTelegramLink === "function") {
-          tg.openTelegramLink(botUrl);
-        }
-      }, 250);
+        try {
+          if (tg && typeof tg.close === "function") {
+            tg.close();
+          }
+        } catch (_) {}
+      }, 300);
     }
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
@@ -705,7 +716,7 @@
       }
 
       const cmd = `#DEPOSIT | UID:${uid} | NET:${network} | AMT:${amount}`;
-      prepareBotRequest(cmd, statusEl);
+      submitToBot({ type: "deposit", network, amount }, cmd, statusEl);
     });
 
     document.getElementById("wdrSubmitBtn").addEventListener("click", () => {
@@ -733,7 +744,7 @@
       }
 
       const cmd = `#WITHDRAW | UID:${uid} | NET:${network} | AMT:${amount} | ADDR:${address}`;
-      prepareBotRequest(cmd, statusEl);
+      submitToBot({ type: "withdraw", network, address, amount }, cmd, statusEl);
     });
 
     loadState();
