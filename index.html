@@ -14,18 +14,22 @@
     }
 
     body {
-      background: #0b1118;
+      background: radial-gradient(circle at 50% 0%, #101d2e 0%, #070b10 55%, #05080d 100%);
       color: #f3f4f6;
-      padding: 16px 14px 88px;
+      padding: 14px 14px 104px;
       min-height: 100vh;
     }
 
-    /* Splash Loader */
+    /* Realistic 3D-style Server Vault Splash */
     .splash-screen {
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: radial-gradient(circle at 50% 20%, #0d47a1 0%, #071b36 48%, #040911 100%);
+      background:
+        linear-gradient(rgba(15, 23, 42, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.25) 1px, transparent 1px),
+        radial-gradient(circle at 50% 18%, rgba(16, 185, 129, 0.16), rgba(37, 99, 235, 0.14) 38%, #04070c 82%);
+      background-size: 32px 32px, 32px 32px, 100% 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -40,127 +44,217 @@
       pointer-events: none;
     }
 
-    .splash-glow-top {
-      position: absolute;
-      top: -80px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 340px;
-      height: 220px;
-      background: rgba(37, 99, 235, 0.45);
-      filter: blur(70px);
-      pointer-events: none;
+    .splash-top-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: #a7f3d0;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .splash-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseDot 1.4s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.6; }
     }
 
     .splash-hero {
-      position: relative;
-      z-index: 2;
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 380px;
+      max-width: 390px;
     }
 
-    .splash-bot-wrap {
-      width: 230px;
-      height: 250px;
+    .splash-rack-card {
+      width: 248px;
+      height: 248px;
+      border-radius: 28px;
+      background: linear-gradient(155deg, rgba(24, 34, 48, 0.92), rgba(8, 13, 21, 0.96));
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.75),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 18px 34px rgba(14, 165, 233, 0.35));
-      animation: floatBot 2.6s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
     }
 
-    @keyframes floatBot {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-7px); }
+    .splash-rack-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(from 0deg, transparent, rgba(52, 211, 153, 0.14), transparent, rgba(245, 158, 11, 0.14), transparent);
+      animation: slowSpin 9s linear infinite;
+    }
+
+    @keyframes slowSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .splash-rack-inner {
+      position: relative;
+      z-index: 2;
+      width: 226px;
+      height: 226px;
+      border-radius: 22px;
+      background: #090e16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splash-brand {
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      color: #ffffff;
     }
 
     .splash-status {
-      margin-top: 14px;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      color: #60a5fa;
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      color: #34d399;
       text-transform: uppercase;
       text-align: center;
-      text-shadow: 0 0 18px rgba(59, 130, 246, 0.7);
     }
 
     .splash-footer {
-      position: relative;
-      z-index: 2;
       width: 100%;
-      max-width: 380px;
+      max-width: 390px;
     }
 
     .splash-bar-row {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
+      font-size: 12px;
+      color: #94a3b8;
     }
 
     .splash-pct {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
-      color: #ffffff;
-      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+      color: #f59e0b;
     }
 
     .splash-track {
       width: 100%;
-      height: 10px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(96, 165, 250, 0.35);
+      height: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.22);
       border-radius: 999px;
       overflow: hidden;
-      padding: 1px;
     }
 
     .splash-fill {
       height: 100%;
       width: 6%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #2563eb, #38bdf8, #34d399);
-      transition: width 0.2s ease;
+      background: linear-gradient(90deg, #f59e0b, #10b981, #38bdf8);
+      transition: width 0.22s ease;
     }
 
+    /* Main LootVault-inspired Terminal UI */
     .app {
       max-width: 520px;
       margin: 0 auto;
     }
 
-    .card {
-      background: #121b26;
-      border: 1px solid #1f2d3d;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
+    .top-brand-card {
+      background: linear-gradient(145deg, #131b26 0%, #0c121a 100%);
+      border: 1px solid rgba(245, 158, 11, 0.24);
+      border-radius: 20px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     }
 
-    .header-row {
+    .brand-top-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .header-right {
+    .brand-left {
       display: flex;
       align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-emblem {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(16, 185, 129, 0.14));
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fbbf24;
+      flex-shrink: 0;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.18);
+    }
+
+    .title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .web3-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      color: #f59e0b;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .brand-pills-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
     }
 
     .lang-switcher {
       display: inline-flex;
-      background: #0b1118;
-      border: 1px solid #263649;
-      border-radius: 10px;
+      background: #090e15;
+      border: 1px solid #243244;
+      border-radius: 11px;
       padding: 2px;
       gap: 2px;
     }
@@ -170,36 +264,135 @@
       background: transparent;
       color: #9ca3af;
       font-size: 11px;
-      font-weight: 700;
-      padding: 5px 7px;
+      font-weight: 800;
+      padding: 5px 8px;
       border-radius: 8px;
       cursor: pointer;
     }
 
     .lang-btn.active {
-      background: #2563eb;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #090d14;
+    }
+
+    .uid-badge {
+      background: #101924;
+      border: 1px solid #253447;
+      color: #cbd5e1;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .vault-banner {
+      background: linear-gradient(120deg, rgba(16, 185, 129, 0.14) 0%, rgba(15, 23, 42, 0.92) 55%, rgba(245, 158, 11, 0.14) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.28);
+      border-radius: 18px;
+      padding: 13px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .vault-badge-pill {
+      display: inline-block;
+      background: rgba(52, 211, 153, 0.16);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: #6ee7b7;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .vault-title {
+      font-size: 13.5px;
+      font-weight: 800;
       color: #ffffff;
     }
 
-    .title {
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      font-size: 12px;
+    .vault-sub {
+      font-size: 11.5px;
       color: #9ca3af;
       margin-top: 2px;
     }
 
-    .uid-badge {
-      background: #1a2636;
-      border: 1px solid #2b3e54;
-      color: #cbd5e1;
+    .vault-cta {
+      background: #2dd4bf;
+      color: #061014;
+      border: none;
+      border-radius: 12px;
+      padding: 9px 13px;
       font-size: 12px;
-      padding: 6px 10px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .card {
+      background: linear-gradient(160deg, #121a24 0%, #0c1118 100%);
+      border: 1px solid #1e2a3a;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38);
+    }
+
+    .card.gold-accent {
+      border-color: rgba(245, 158, 11, 0.34);
+    }
+
+    .card-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #e5e7eb;
+    }
+
+    .pill-muted {
+      background: #17212e;
+      border: 1px solid #273649;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
       border-radius: 999px;
       white-space: nowrap;
+    }
+
+    .pill-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .pill-live::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
     }
 
     .balance-label {
@@ -209,10 +402,31 @@
     }
 
     .balance-value {
-      font-size: 30px;
-      font-weight: 800;
+      font-size: 31px;
+      font-weight: 900;
       color: #ffffff;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      letter-spacing: -0.4px;
+    }
+
+    .balance-unit {
+      font-size: 14px;
+      font-weight: 800;
+      color: #f59e0b;
+      margin-left: 4px;
+    }
+
+    .mining-rate-hero {
+      font-size: 28px;
+      font-weight: 900;
+      color: #10b981;
+      margin-bottom: 12px;
+    }
+
+    .mining-rate-hero span {
+      font-size: 14px;
+      font-weight: 800;
+      color: #6ee7b7;
     }
 
     .stats-grid {
@@ -223,9 +437,9 @@
     }
 
     .stat-box {
-      background: #0d141d;
-      border: 1px solid #1c2938;
-      border-radius: 12px;
+      background: #090e15;
+      border: 1px solid #1b2736;
+      border-radius: 14px;
       padding: 12px;
     }
 
@@ -236,13 +450,13 @@
     }
 
     .stat-main {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 800;
       color: #10b981;
     }
 
     .stat-main.gold {
-      color: #f59e0b;
+      color: #fbbf24;
     }
 
     .stat-sub {
@@ -254,19 +468,20 @@
     .btn {
       width: 100%;
       border: none;
-      border-radius: 12px;
+      border-radius: 13px;
       padding: 13px 16px;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.15s ease, transform 0.1s ease;
       text-decoration: none;
       display: inline-block;
       text-align: center;
     }
 
     .btn:active {
-      opacity: 0.85;
+      opacity: 0.88;
+      transform: scale(0.99);
     }
 
     .btn:disabled {
@@ -275,17 +490,25 @@
     }
 
     .btn-green {
-      background: #0ea86d;
+      background: linear-gradient(135deg, #10b981, #059669);
       color: #ffffff;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #090d14;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.22);
     }
 
     .btn-blue {
-      background: #2563eb;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
       color: #ffffff;
     }
 
     .btn-gray {
-      background: #1e2d3d;
+      background: #1a2533;
+      border: 1px solid #29394d;
       color: #e5e7eb;
       margin-bottom: 10px;
     }
@@ -296,12 +519,13 @@
       font-size: 12px;
       margin-bottom: 8px;
       color: #cbd5e1;
+      font-weight: 600;
     }
 
     .progress-bar {
       width: 100%;
       height: 8px;
-      background: #0b1118;
+      background: #090e15;
       border-radius: 999px;
       overflow: hidden;
       margin-bottom: 10px;
@@ -310,14 +534,15 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #0ea86d, #34d399);
+      background: linear-gradient(90deg, #f59e0b, #10b981, #34d399);
       transition: width 0.25s ease;
     }
 
     .section-title {
       font-size: 16px;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      color: #ffffff;
     }
 
     .miner-item {
@@ -325,16 +550,17 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      background: #0d141d;
-      border: 1px solid #1c2938;
-      border-radius: 12px;
+      background: #090e15;
+      border: 1px solid #1b2736;
+      border-radius: 14px;
       padding: 12px;
       margin-bottom: 10px;
     }
 
     .miner-name {
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
+      color: #ffffff;
     }
 
     .miner-desc {
@@ -345,7 +571,7 @@
 
     .btn-small {
       width: auto;
-      padding: 9px 13px;
+      padding: 9px 14px;
       font-size: 12px;
       white-space: nowrap;
     }
@@ -359,23 +585,24 @@
       font-size: 12px;
       color: #cbd5e1;
       margin-bottom: 6px;
+      font-weight: 600;
     }
 
     input, select {
       width: 100%;
-      background: #0b1118;
-      border: 1px solid #263649;
+      background: #090e15;
+      border: 1px solid #243347;
       color: #ffffff;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 11px 12px;
       font-size: 14px;
       outline: none;
     }
 
     .wallet-box {
-      background: #0d141d;
-      border: 1px solid #263649;
-      border-radius: 12px;
+      background: #090e15;
+      border: 1px solid rgba(52, 211, 153, 0.26);
+      border-radius: 14px;
       padding: 12px;
       margin-bottom: 12px;
     }
@@ -394,17 +621,75 @@
     }
 
     .wallet-addr {
-      font-size: 12.5px;
+      font-size: 12px;
       color: #34d399;
       word-break: break-all;
       font-family: monospace;
       margin-bottom: 8px;
     }
 
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .history-item {
+      background: #090e15;
+      border: 1px solid #1b2736;
+      border-radius: 13px;
+      padding: 11px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-main {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .history-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .st-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .st-approved {
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .st-rejected {
+      background: rgba(239, 68, 68, 0.16);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
     .ref-box {
-      background: #0d141d;
-      border: 1px solid #263649;
-      border-radius: 10px;
+      background: #090e15;
+      border: 1px solid #243347;
+      border-radius: 12px;
       padding: 10px 12px;
       font-size: 12.5px;
       color: #93c5fd;
@@ -432,22 +717,29 @@
       display: block;
     }
 
+    /* Floating Dock Navigation inspired by LootVault */
     .bottom-nav {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #0f1722;
-      border-top: 1px solid #1e2c3d;
-      padding: 8px 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
       z-index: 20;
+      pointer-events: none;
     }
 
-    .nav-grid {
+    .nav-dock {
+      pointer-events: auto;
       max-width: 520px;
       margin: 0 auto;
+      background: rgba(14, 20, 29, 0.94);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 22px;
+      padding: 6px 8px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7);
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
       gap: 4px;
     }
 
@@ -455,61 +747,120 @@
       background: transparent;
       border: none;
       color: #9ca3af;
-      padding: 6px 2px;
-      border-radius: 10px;
+      padding: 7px 2px;
+      border-radius: 14px;
       font-size: 10.5px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
     }
 
     .nav-btn.active {
-      background: #162836;
-      color: #10b981;
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .nav-center-btn {
+      width: 48px;
+      height: 48px;
+      margin: -14px auto 0;
+      border-radius: 16px;
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      background: linear-gradient(145deg, #1d293a, #0f1622);
+      color: #fbbf24;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+    }
+
+    .sub-tabs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .sub-tab-btn {
+      background: #0d141e;
+      border: 1px solid #223042;
+      color: #cbd5e1;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .sub-tab-btn.active {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #fbbf24;
     }
   </style>
 </head>
 <body>
+  <!-- Realistic Server Vault Splash Screen -->
   <div class="splash-screen" id="splashScreen">
-    <div class="splash-glow-top"></div>
-    <div class="splash-hero">
-      <div class="splash-bot-wrap">
-        <svg viewBox="0 0 240 260" width="220" height="240" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="armorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#1e293b" />
-              <stop offset="55%" stop-color="#0f172a" />
-              <stop offset="100%" stop-color="#020617" />
-            </linearGradient>
-            <linearGradient id="visorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#2563eb" />
-              <stop offset="50%" stop-color="#38bdf8" />
-              <stop offset="100%" stop-color="#1d4ed8" />
-            </linearGradient>
-          </defs>
-          <!-- Shoulders & Chest -->
-          <path d="M45 190 C50 148, 82 135, 120 135 C158 135, 190 148, 195 190 L212 250 L28 250 Z" fill="url(#armorGrad)" stroke="#38bdf8" stroke-width="2" />
-          <path d="M84 162 L120 194 L156 162 L144 216 L96 216 Z" fill="#0b1322" stroke="#2563eb" stroke-width="2" />
-          <path d="M102 174 L120 190 L138 174" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
-          <!-- Neck & Cable -->
-          <rect x="103" y="114" width="34" height="28" rx="6" fill="#0f172a" stroke="#334155" stroke-width="2" />
-          <path d="M86 105 C56 118, 52 158, 72 184" fill="none" stroke="#0284c7" stroke-width="6" stroke-linecap="round" />
-          <!-- Helmet -->
-          <path d="M74 52 C84 22, 156 22, 166 52 C176 80, 168 118, 120 124 C72 118, 64 80, 74 52 Z" fill="url(#armorGrad)" stroke="#60a5fa" stroke-width="2.5" />
-          <!-- Ear fins -->
-          <path d="M72 56 L50 38 L62 82 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-          <path d="M168 56 L190 38 L178 82 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-          <!-- Glowing Visor -->
-          <path d="M82 66 C102 58, 138 58, 158 66 C154 88, 138 102, 120 104 C102 102, 86 88, 82 66 Z" fill="#061224" stroke="url(#visorGrad)" stroke-width="3" />
-          <path d="M90 73 C108 69, 132 69, 150 73" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
-          <!-- Phone held by hand -->
-          <rect x="158" y="182" width="36" height="54" rx="6" fill="#090d16" stroke="#60a5fa" stroke-width="2" />
-          <circle cx="176" cy="226" r="2.5" fill="#38bdf8" />
-        </svg>
-      </div>
-      <div class="splash-status" id="splashStatus">ПОДКЛЮЧЕНИЕ...</div>
+    <div class="splash-top-pill">
+      <span class="splash-dot"></span>
+      <span>MINTTETHER CLUSTER • NODE 01</span>
     </div>
+
+    <div class="splash-hero">
+      <div class="splash-rack-card">
+        <div class="splash-rack-inner">
+          <svg viewBox="0 0 220 220" width="210" height="210" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#334155" />
+                <stop offset="50%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#020617" />
+              </linearGradient>
+              <linearGradient id="goldBeam" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f59e0b" />
+                <stop offset="100%" stop-color="#10b981" />
+              </linearGradient>
+            </defs>
+            <!-- Outer Isometric Vault Ring -->
+            <ellipse cx="110" cy="112" rx="84" ry="84" fill="none" stroke="rgba(148,163,184,0.16)" stroke-width="1.5" stroke-dasharray="6 6" />
+            <ellipse cx="110" cy="112" rx="64" ry="64" fill="url(#metalGrad)" stroke="url(#goldBeam)" stroke-width="2.5" />
+            <!-- Server Blades & Cooling Fins -->
+            <rect x="74" y="78" width="72" height="14" rx="4" fill="#060a12" stroke="#38bdf8" stroke-width="1.2" />
+            <circle cx="84" cy="85" r="2.5" fill="#10b981" />
+            <circle cx="93" cy="85" r="2.5" fill="#fbbf24" />
+            <line x1="106" y1="85" x2="136" y2="85" stroke="#475569" stroke-width="2" />
+
+            <rect x="74" y="98" width="72" height="14" rx="4" fill="#060a12" stroke="#f59e0b" stroke-width="1.2" />
+            <circle cx="84" cy="105" r="2.5" fill="#10b981" />
+            <circle cx="93" cy="105" r="2.5" fill="#10b981" />
+            <line x1="106" y1="105" x2="136" y2="105" stroke="#475569" stroke-width="2" />
+
+            <rect x="74" y="118" width="72" height="14" rx="4" fill="#060a12" stroke="#10b981" stroke-width="1.2" />
+            <circle cx="84" cy="125" r="2.5" fill="#38bdf8" />
+            <circle cx="93" cy="125" r="2.5" fill="#10b981" />
+            <line x1="106" y1="125" x2="136" y2="125" stroke="#475569" stroke-width="2" />
+
+            <!-- Tether / Vault Core Symbol -->
+            <circle cx="110" cy="154" r="14" fill="#09111d" stroke="#fbbf24" stroke-width="1.8" />
+            <text x="110" y="159" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="900">₮</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="splash-brand">MintTether Vault</div>
+      <div class="splash-status" id="splashStatus">ПОДКЛЮЧЕНИЕ К СЕРВЕРУ...</div>
+    </div>
+
     <div class="splash-footer">
       <div class="splash-bar-row">
+        <span id="splashSubLabel">BEP20 • TRC20 • TON</span>
         <div class="splash-pct" id="splashPct">6%</div>
       </div>
       <div class="splash-track">
@@ -519,47 +870,75 @@
   </div>
 
   <div class="app">
-    <div class="card">
-      <div class="header-row">
-        <div>
-          <div class="title" id="appTitle">MintTether Terminal</div>
-          <div class="subtitle" id="appSubtitle">USDT Mining &amp; Finance Suite</div>
-        </div>
-        <div class="header-right">
-          <div class="lang-switcher" aria-label="Language">
-            <button type="button" class="lang-btn active" data-lang="ru">RU</button>
-            <button type="button" class="lang-btn" data-lang="en">EN</button>
-            <button type="button" class="lang-btn" data-lang="uk">UK</button>
+    <div class="top-brand-card">
+      <div class="brand-top-row">
+        <div class="brand-left">
+          <div class="brand-emblem">₮</div>
+          <div>
+            <div class="title" id="appTitle">MintTether Mining</div>
+            <div class="web3-tag" id="appSubtitle">OFFICIAL USDT MINING HUB</div>
           </div>
-          <div class="uid-badge" id="uidBadge">UID: ---</div>
         </div>
+        <div class="pill-muted" id="tierBadge">LVL 1</div>
       </div>
+
+      <div class="brand-pills-row">
+        <div class="lang-switcher" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="uk">UK</button>
+        </div>
+        <div class="uid-badge" id="uidBadge">UID: ---</div>
+      </div>
+    </div>
+
+    <div class="vault-banner">
+      <div>
+        <div class="vault-title">
+          <span id="vaultBannerTitle">USDT Vault</span>
+          <span class="vault-badge-pill">20M CYCLE</span>
+        </div>
+        <div class="vault-sub" id="vaultBannerSub">Пополнение и ускорение добычи в USDT</div>
+      </div>
+      <button type="button" class="vault-cta" id="quickDepositBtn">Депозит &gt;</button>
     </div>
 
     <div id="tab-miner" class="tab-page active">
       <div class="card">
-        <div class="balance-label" id="balanceLabel">Общий баланс</div>
-        <div class="balance-value" id="balanceDisplay">0.000000 USDT</div>
+        <div class="card-top-bar">
+          <div class="card-kicker">💼 <span id="balanceLabel">Баланс в приложении</span></div>
+          <span class="pill-muted" id="syncPill">USDT</span>
+        </div>
+        <div class="balance-value" id="balanceDisplay">0.000000<span class="balance-unit">USDT</span></div>
+        <button class="btn btn-green" id="claimBtn">⛏️ Собрать намайненное</button>
+      </div>
+
+      <div class="card gold-accent">
+        <div class="card-top-bar">
+          <div>
+            <div class="card-kicker">⛏️ <span id="activeMiningTitle">Активный майнинг</span></div>
+            <div class="pill-live" id="miningLiveLabel">Работает</div>
+          </div>
+          <span class="pill-muted" id="cycleBadge">Цикл 20 мин</span>
+        </div>
+
+        <div class="mining-rate-hero" id="speed20mDisplay">+0.00002 <span>USDT / 20m</span></div>
 
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-title" id="speed20mLabel">Скорость / 20 мин</div>
-            <div class="stat-main" id="speed20mDisplay">+0.00002 USDT</div>
-            <div class="stat-sub" id="speed1mDisplay">0.000001 USDT / мин</div>
+            <div class="stat-title" id="speed1mLabel">Скорость в минуту</div>
+            <div class="stat-main" id="speed1mDisplay">0.0000010</div>
+            <div class="stat-sub">USDT / мин</div>
           </div>
           <div class="stat-box">
             <div class="stat-title" id="minedLabel">Намайнено</div>
-            <div class="stat-main gold" id="minedDisplay">0.000000 USDT</div>
+            <div class="stat-main gold" id="minedDisplay">0.000000</div>
             <div class="stat-sub" id="cycleLabel">Цикл: 20 минут</div>
           </div>
         </div>
 
-        <button class="btn btn-green" id="claimBtn">⛏️ Собрать намайненное</button>
-      </div>
-
-      <div class="card">
         <div class="progress-top">
-          <span id="progressLabel">Прогресс до вывода ($35.00)</span>
+          <span id="progressLabel">До вывода ($35.00 USDT)</span>
           <span id="progressPct">0.0%</span>
         </div>
         <div class="progress-bar">
@@ -570,7 +949,7 @@
     </div>
 
     <div id="tab-shop" class="tab-page">
-      <div class="card">
+      <div class="card gold-accent">
         <div class="section-title" id="shopTitle">Магазин майнеров</div>
         <div class="subtitle" style="margin-bottom: 12px;" id="shopBalanceInfo">Доступный баланс: 0.000000 USDT</div>
         <div id="shopList"></div>
@@ -596,7 +975,7 @@
             <button type="button" class="btn btn-gray btn-small" style="margin-bottom:0;" id="copyWalletBtn">📋 Копировать</button>
           </div>
           <div class="wallet-addr" id="walletAddressDisplay"></div>
-          <div class="subtitle" id="walletHint">Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».</div>
+          <div class="subtitle" id="walletHint">Переведите USDT на указанный адрес, введите сумму и нажмите «Я оплатил».</div>
         </div>
 
         <div class="field">
@@ -605,6 +984,14 @@
         </div>
         <button class="btn btn-green" id="depSubmitBtn">✅ Я оплатил — отправить заявку</button>
         <div class="status-msg" id="depStatus"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top-bar">
+          <div class="section-title" style="margin-bottom:0;" id="depHistoryTitle">История пополнений</div>
+          <button type="button" class="btn btn-gray btn-small" style="margin-bottom:0;" id="refreshDepHistBtn">🔄</button>
+        </div>
+        <div class="history-list" id="depositHistoryList"></div>
       </div>
     </div>
 
@@ -627,8 +1014,16 @@
           <label for="wdrAmount" id="wdrAmountLabel">Сумма вывода (USDT)</label>
           <input type="number" id="wdrAmount" min="35" step="0.01" placeholder="Минимум 35.00" />
         </div>
-        <button class="btn btn-blue" id="wdrSubmitBtn">Отправить заявку на вывод</button>
+        <button class="btn btn-gold" id="wdrSubmitBtn">Отправить заявку на вывод</button>
         <div class="status-msg" id="wdrStatus"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top-bar">
+          <div class="section-title" style="margin-bottom:0;" id="wdrHistoryTitle">История выводов</div>
+          <button type="button" class="btn btn-gray btn-small" style="margin-bottom:0;" id="refreshWdrHistBtn">🔄</button>
+        </div>
+        <div class="history-list" id="withdrawHistoryList"></div>
       </div>
     </div>
 
@@ -667,20 +1062,33 @@
         </div>
         <label id="refLinkLabel">Ваша реферальная ссылка</label>
         <div class="ref-box" id="refLinkBox">https://t.me/MintTetherBot?start=ref_5224967757</div>
-        <button class="btn btn-blue" id="copyRefBtn">📋 Скопировать ссылку</button>
+        <button class="btn btn-gold" id="copyRefBtn">📋 Скопировать ссылку</button>
         <div class="status-msg" id="refStatus"></div>
       </div>
     </div>
   </div>
 
   <nav class="bottom-nav">
-    <div class="nav-grid">
-      <button class="nav-btn active" data-tab="tab-miner" id="navMiner">⛏️ Майнер</button>
-      <button class="nav-btn" data-tab="tab-shop" id="navShop">🛒 Магазин</button>
-      <button class="nav-btn" data-tab="tab-deposit" id="navDeposit">💳 Депозит</button>
-      <button class="nav-btn" data-tab="tab-withdraw" id="navWithdraw">💸 Вывод</button>
-      <button class="nav-btn" data-tab="tab-bonus" id="navBonus">🎁 Бонус</button>
-      <button class="nav-btn" data-tab="tab-ref" id="navRef">👥 Реф</button>
+    <div class="nav-dock">
+      <button class="nav-btn active" data-tab="tab-miner" id="navMiner">
+        <span>⛏️</span>
+        <span>Майнер</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-shop" id="navShop">
+        <span>🛒</span>
+        <span>Магазин</span>
+      </button>
+      <button type="button" class="nav-center-btn" id="centerBonusBtn" title="Bonus">
+        🎁
+      </button>
+      <button class="nav-btn" data-tab="tab-deposit" id="navDeposit">
+        <span>💳</span>
+        <span>Депозит</span>
+      </button>
+      <button class="nav-btn" data-tab="tab-withdraw" id="navWithdraw">
+        <span>💸</span>
+        <span>Вывод</span>
+      </button>
     </div>
   </nav>
 
@@ -716,17 +1124,22 @@
 
     const I18N = {
       ru: {
-        splashLoading: "ПОДКЛЮЧЕНИЕ...",
-        splashSync: "СИНХРОНИЗАЦИЯ...",
-        appTitle: "MintTether Terminal",
-        appSubtitle: "USDT Mining & Finance Suite",
-        balanceLabel: "Общий баланс",
-        speed20mLabel: "Скорость / 20 мин",
-        speed1mUnit: "USDT / мин",
+        splashLoading: "ПОДКЛЮЧЕНИЕ К СЕРВЕРУ...",
+        splashSync: "СИНХРОНИЗАЦИЯ БАЛАНСА...",
+        appTitle: "MintTether Mining",
+        appSubtitle: "OFFICIAL USDT MINING HUB",
+        vaultBannerTitle: "USDT Vault",
+        vaultBannerSub: "Пополнение и ускорение добычи в USDT",
+        quickDepositBtn: "Депозит >",
+        balanceLabel: "Баланс в приложении",
+        activeMiningTitle: "Активный майнинг",
+        miningLiveLabel: "Работает",
+        cycleBadge: "Цикл 20 мин",
+        speed1mLabel: "Скорость в минуту",
         minedLabel: "Намайнено",
         cycleLabel: "Цикл: 20 минут",
         claimBtn: "⛏️ Собрать намайненное",
-        progressLabel: "Прогресс до вывода ($35.00)",
+        progressLabel: "До вывода ($35.00 USDT)",
         minersSummary: (count, rate) => `Куплено майнеров: ${count} • Скорость: ${rate.toFixed(5)} USDT / 20 мин`,
         shopTitle: "Магазин майнеров",
         shopBalanceInfo: (bal) => `Доступный баланс: ${bal.toFixed(6)} USDT`,
@@ -742,10 +1155,11 @@
         depNetworkLabel: "Сеть",
         walletPrefix: (net) => `Адрес для перевода (${net}):`,
         copyBtn: "📋 Копировать",
-        walletHint: "Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».",
+        walletHint: "Переведите USDT на указанный адрес, введите сумму и нажмите «Я оплатил».",
         depAmountLabel: "Сумма оплаты (USDT)",
         depAmountPlaceholder: "Например, 10",
         depSubmitBtn: "✅ Я оплатил — отправить заявку",
+        depHistoryTitle: "История пополнений",
         wdrTitle: "Вывод средств (от $35.00 USDT)",
         wdrNetworkLabel: "Сеть",
         wdrAddressLabel: "Адрес кошелька",
@@ -753,6 +1167,11 @@
         wdrAmountLabel: "Сумма вывода (USDT)",
         wdrAmountPlaceholder: "Минимум 35.00",
         wdrSubmitBtn: "Отправить заявку на вывод",
+        wdrHistoryTitle: "История выводов",
+        emptyHistory: "Заявок пока нет.",
+        stPending: "Ожидает",
+        stApproved: "Подтверждено",
+        stRejected: "Отклонено",
         dailyBonusTitle: "Ежедневный бонус",
         dailyBonusDesc: "Получайте <strong>+0.001 USDT</strong> каждые 24 часа за активность.",
         bonusBtn: "🎁 Забрать бонус (+0.001 USDT)",
@@ -766,12 +1185,10 @@
         refCountLabel: "Приглашено рефералов",
         refLinkLabel: "Ваша реферальная ссылка",
         copyRefBtn: "📋 Скопировать ссылку",
-        navMiner: "⛏️ Майнер",
-        navShop: "🛒 Магазин",
-        navDeposit: "💳 Депозит",
-        navWithdraw: "💸 Вывод",
-        navBonus: "🎁 Бонус",
-        navRef: "👥 Реф",
+        navMiner: "Майнер",
+        navShop: "Магазин",
+        navDeposit: "Депозит",
+        navWithdraw: "Вывод",
         sendingReq: "Отправка заявки...",
         reqSent: (id) => `Заявка отправлена! Номер: ${id}. Ожидайте проверки администратора.`,
         reqErr: (msg) => `Ошибка: ${msg}`,
@@ -788,17 +1205,22 @@
         subBonusGot: "Начислено +0.10 USDT за подписку на канал @MintTetherHub."
       },
       en: {
-        splashLoading: "CONNECTING...",
-        splashSync: "SYNCING DATA...",
-        appTitle: "MintTether Terminal",
-        appSubtitle: "USDT Mining & Finance Suite",
-        balanceLabel: "Total Balance",
-        speed20mLabel: "Speed / 20 min",
-        speed1mUnit: "USDT / min",
+        splashLoading: "CONNECTING TO SERVER...",
+        splashSync: "SYNCING BALANCE...",
+        appTitle: "MintTether Mining",
+        appSubtitle: "OFFICIAL USDT MINING HUB",
+        vaultBannerTitle: "USDT Vault",
+        vaultBannerSub: "Deposits & mining acceleration in USDT",
+        quickDepositBtn: "Deposit >",
+        balanceLabel: "App Balance",
+        activeMiningTitle: "Active Mining",
+        miningLiveLabel: "Running",
+        cycleBadge: "20m Cycle",
+        speed1mLabel: "Speed per minute",
         minedLabel: "Mined",
         cycleLabel: "Cycle: 20 minutes",
         claimBtn: "⛏️ Claim Mined",
-        progressLabel: "Progress to withdraw ($35.00)",
+        progressLabel: "To withdraw ($35.00 USDT)",
         minersSummary: (count, rate) => `Miners owned: ${count} • Speed: ${rate.toFixed(5)} USDT / 20 min`,
         shopTitle: "Miner Shop",
         shopBalanceInfo: (bal) => `Available balance: ${bal.toFixed(6)} USDT`,
@@ -818,6 +1240,7 @@
         depAmountLabel: "Amount (USDT)",
         depAmountPlaceholder: "For example, 10",
         depSubmitBtn: "✅ I have paid — submit request",
+        depHistoryTitle: "Deposit History",
         wdrTitle: "Withdraw Funds (from $35.00 USDT)",
         wdrNetworkLabel: "Network",
         wdrAddressLabel: "Wallet Address",
@@ -825,6 +1248,11 @@
         wdrAmountLabel: "Withdraw Amount (USDT)",
         wdrAmountPlaceholder: "Minimum 35.00",
         wdrSubmitBtn: "Submit withdrawal request",
+        wdrHistoryTitle: "Withdrawal History",
+        emptyHistory: "No requests yet.",
+        stPending: "Pending",
+        stApproved: "Approved",
+        stRejected: "Rejected",
         dailyBonusTitle: "Daily Bonus",
         dailyBonusDesc: "Get <strong>+0.001 USDT</strong> every 24 hours for activity.",
         bonusBtn: "🎁 Claim Bonus (+0.001 USDT)",
@@ -838,12 +1266,10 @@
         refCountLabel: "Invited referrals",
         refLinkLabel: "Your referral link",
         copyRefBtn: "📋 Copy Link",
-        navMiner: "⛏️ Miner",
-        navShop: "🛒 Shop",
-        navDeposit: "💳 Deposit",
-        navWithdraw: "💸 Withdraw",
-        navBonus: "🎁 Bonus",
-        navRef: "👥 Ref",
+        navMiner: "Miner",
+        navShop: "Shop",
+        navDeposit: "Deposit",
+        navWithdraw: "Withdraw",
         sendingReq: "Sending request...",
         reqSent: (id) => `Request sent! ID: ${id}. Awaiting admin review.`,
         reqErr: (msg) => `Error: ${msg}`,
@@ -860,17 +1286,22 @@
         subBonusGot: "Credited +0.10 USDT for subscribing to @MintTetherHub."
       },
       uk: {
-        splashLoading: "ПІДКЛЮЧЕННЯ...",
-        splashSync: "СИНХРОНІЗАЦІЯ...",
-        appTitle: "MintTether Terminal",
-        appSubtitle: "USDT Mining & Finance Suite",
-        balanceLabel: "Загальний баланс",
-        speed20mLabel: "Швидкість / 20 хв",
-        speed1mUnit: "USDT / хв",
+        splashLoading: "ПІДКЛЮЧЕННЯ ДО СЕРВЕРА...",
+        splashSync: "СИНХРОНІЗАЦІЯ БАЛАНСУ...",
+        appTitle: "MintTether Mining",
+        appSubtitle: "OFFICIAL USDT MINING HUB",
+        vaultBannerTitle: "USDT Vault",
+        vaultBannerSub: "Поповнення та прискорення видобутку в USDT",
+        quickDepositBtn: "Депозит >",
+        balanceLabel: "Баланс у додатку",
+        activeMiningTitle: "Активний майнінг",
+        miningLiveLabel: "Працює",
+        cycleBadge: "Цикл 20 хв",
+        speed1mLabel: "Швидкість за хвилину",
         minedLabel: "Намайнено",
         cycleLabel: "Цикл: 20 хвилин",
-        claimBtn: "⛏️ Зібрати намайнене",
-        progressLabel: "Прогрес до виводу ($35.00)",
+        claimBtn: "⛏️ Зібрати намайненне",
+        progressLabel: "До виводу ($35.00 USDT)",
         minersSummary: (count, rate) => `Куплено майнерів: ${count} • Швидкість: ${rate.toFixed(5)} USDT / 20 хв`,
         shopTitle: "Магазин майнерів",
         shopBalanceInfo: (bal) => `Доступний баланс: ${bal.toFixed(6)} USDT`,
@@ -890,6 +1321,7 @@
         depAmountLabel: "Сума оплати (USDT)",
         depAmountPlaceholder: "Наприклад, 10",
         depSubmitBtn: "✅ Я оплатив — надіслати заявку",
+        depHistoryTitle: "Історія поповнень",
         wdrTitle: "Вивід коштів (від $35.00 USDT)",
         wdrNetworkLabel: "Мережа",
         wdrAddressLabel: "Адреса гаманця",
@@ -897,6 +1329,11 @@
         wdrAmountLabel: "Сума виводу (USDT)",
         wdrAmountPlaceholder: "Мінімум 35.00",
         wdrSubmitBtn: "Надіслати заявку на вивід",
+        wdrHistoryTitle: "Історія виводів",
+        emptyHistory: "Заявок ще немає.",
+        stPending: "Очікує",
+        stApproved: "Підтверджено",
+        stRejected: "Відхилено",
         dailyBonusTitle: "Щоденний бонус",
         dailyBonusDesc: "Отримуйте <strong>+0.001 USDT</strong> кожні 24 години за активність.",
         bonusBtn: "🎁 Забрати бонус (+0.001 USDT)",
@@ -910,12 +1347,10 @@
         refCountLabel: "Запрошено рефералів",
         refLinkLabel: "Ваше реферальне посилання",
         copyRefBtn: "📋 Скопіювати посилання",
-        navMiner: "⛏️ Майнер",
-        navShop: "🛒 Магазин",
-        navDeposit: "💳 Депозит",
-        navWithdraw: "💸 Вивід",
-        navBonus: "🎁 Бонус",
-        navRef: "👥 Реф",
+        navMiner: "Майнер",
+        navShop: "Магазин",
+        navDeposit: "Депозит",
+        navWithdraw: "Вивід",
         sendingReq: "Надсилання заявки...",
         reqSent: (id) => `Заявку надіслано! Номер: ${id}. Очікуйте перевірки адміністратора.`,
         reqErr: (msg) => `Помилка: ${msg}`,
@@ -952,7 +1387,8 @@
       channelBonusClaimed: false,
       referrals: 0,
       invitedBy: null,
-      miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
+      miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 },
+      history: { deposits: [], withdrawals: [] }
     };
 
     function t() {
@@ -1003,8 +1439,14 @@
       document.documentElement.lang = lang;
       document.getElementById("appTitle").textContent = tr.appTitle;
       document.getElementById("appSubtitle").textContent = tr.appSubtitle;
+      document.getElementById("vaultBannerTitle").textContent = tr.vaultBannerTitle;
+      document.getElementById("vaultBannerSub").textContent = tr.vaultBannerSub;
+      document.getElementById("quickDepositBtn").textContent = tr.quickDepositBtn;
       document.getElementById("balanceLabel").textContent = tr.balanceLabel;
-      document.getElementById("speed20mLabel").textContent = tr.speed20mLabel;
+      document.getElementById("activeMiningTitle").textContent = tr.activeMiningTitle;
+      document.getElementById("miningLiveLabel").textContent = tr.miningLiveLabel;
+      document.getElementById("cycleBadge").textContent = tr.cycleBadge;
+      document.getElementById("speed1mLabel").textContent = tr.speed1mLabel;
       document.getElementById("minedLabel").textContent = tr.minedLabel;
       document.getElementById("cycleLabel").textContent = tr.cycleLabel;
       document.getElementById("claimBtn").textContent = tr.claimBtn;
@@ -1017,6 +1459,7 @@
       document.getElementById("depAmountLabel").textContent = tr.depAmountLabel;
       document.getElementById("depAmount").placeholder = tr.depAmountPlaceholder;
       document.getElementById("depSubmitBtn").textContent = tr.depSubmitBtn;
+      document.getElementById("depHistoryTitle").textContent = tr.depHistoryTitle;
       document.getElementById("wdrTitle").textContent = tr.wdrTitle;
       document.getElementById("wdrNetworkLabel").textContent = tr.wdrNetworkLabel;
       document.getElementById("wdrAddressLabel").textContent = tr.wdrAddressLabel;
@@ -1024,6 +1467,7 @@
       document.getElementById("wdrAmountLabel").textContent = tr.wdrAmountLabel;
       document.getElementById("wdrAmount").placeholder = tr.wdrAmountPlaceholder;
       document.getElementById("wdrSubmitBtn").textContent = tr.wdrSubmitBtn;
+      document.getElementById("wdrHistoryTitle").textContent = tr.wdrHistoryTitle;
       document.getElementById("dailyBonusTitle").textContent = tr.dailyBonusTitle;
       document.getElementById("dailyBonusDesc").innerHTML = tr.dailyBonusDesc;
       document.getElementById("bonusBtn").textContent = tr.bonusBtn;
@@ -1035,14 +1479,14 @@
       document.getElementById("refCountLabel").textContent = tr.refCountLabel;
       document.getElementById("refLinkLabel").textContent = tr.refLinkLabel;
       document.getElementById("copyRefBtn").textContent = tr.copyRefBtn;
-      document.getElementById("navMiner").textContent = tr.navMiner;
-      document.getElementById("navShop").textContent = tr.navShop;
-      document.getElementById("navDeposit").textContent = tr.navDeposit;
-      document.getElementById("navWithdraw").textContent = tr.navWithdraw;
-      document.getElementById("navBonus").textContent = tr.navBonus;
-      document.getElementById("navRef").textContent = tr.navRef;
+
+      document.querySelector("#navMiner span:last-child").textContent = tr.navMiner;
+      document.querySelector("#navShop span:last-child").textContent = tr.navShop;
+      document.querySelector("#navDeposit span:last-child").textContent = tr.navDeposit;
+      document.querySelector("#navWithdraw span:last-child").textContent = tr.navWithdraw;
 
       renderShop();
+      renderHistory();
       renderUI();
     }
 
@@ -1065,6 +1509,10 @@
             pulse: Number(parsed.miners && parsed.miners.pulse) || 0,
             cluster: Number(parsed.miners && parsed.miners.cluster) || 0,
             titan: Number(parsed.miners && parsed.miners.titan) || 0
+          },
+          history: {
+            deposits: Array.isArray(parsed.history && parsed.history.deposits) ? parsed.history.deposits : [],
+            withdrawals: Array.isArray(parsed.history && parsed.history.withdrawals) ? parsed.history.withdrawals : []
           }
         };
       } catch (_) {}
@@ -1097,8 +1545,15 @@
         if (typeof data.referrals === "number") {
           state.referrals = Number(data.referrals);
         }
+        if (data.history && typeof data.history === "object") {
+          state.history = {
+            deposits: Array.isArray(data.history.deposits) ? data.history.deposits : [],
+            withdrawals: Array.isArray(data.history.withdrawals) ? data.history.withdrawals : []
+          };
+        }
         saveState();
         renderShop();
+        renderHistory();
         renderUI();
       } catch (_) {}
     }
@@ -1139,6 +1594,11 @@
       return MINERS.reduce((sum, m) => sum + (state.miners[m.id] || 0), 0);
     }
 
+    function getLevel() {
+      const total = getTotalMinersCount();
+      return 1 + Math.floor(total / 2);
+    }
+
     function tickMining() {
       const now = Date.now();
       const prev = Number(state.lastTick) || now;
@@ -1148,6 +1608,47 @@
       state.lastTick = now;
       saveState();
       renderUI();
+    }
+
+    function formatStatusBadge(status) {
+      const tr = t();
+      if (status === "approved") {
+        return `<span class="status-badge st-approved">✓ ${tr.stApproved}</span>`;
+      }
+      if (status === "rejected") {
+        return `<span class="status-badge st-rejected">✕ ${tr.stRejected}</span>`;
+      }
+      return `<span class="status-badge st-pending">⏳ ${tr.stPending}</span>`;
+    }
+
+    function renderHistoryBox(containerId, items) {
+      const tr = t();
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      if (!Array.isArray(items) || items.length === 0) {
+        el.innerHTML = `<div class="subtitle">${tr.emptyHistory}</div>`;
+        return;
+      }
+      el.innerHTML = items
+        .map((it) => {
+          const dt = it.createdAt ? new Date(it.createdAt).toLocaleString() : "";
+          const addrPart = it.address ? ` • ${it.address}` : "";
+          return `
+            <div class="history-item">
+              <div>
+                <div class="history-main">${Number(it.amount || 0).toFixed(2)} USDT • ${it.network || "USDT"}</div>
+                <div class="history-meta">${it.id || ""}${addrPart}${dt ? " • " + dt : ""}</div>
+              </div>
+              ${formatStatusBadge(it.status)}
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function renderHistory() {
+      renderHistoryBox("depositHistoryList", state.history && state.history.deposits);
+      renderHistoryBox("withdrawHistoryList", state.history && state.history.withdrawals);
     }
 
     function renderShop() {
@@ -1267,21 +1768,35 @@
       const pct = Math.min(100, (state.balance / MIN_WITHDRAW) * 100);
 
       document.getElementById("uidBadge").textContent = "UID: " + uid;
-      document.getElementById("balanceDisplay").textContent = state.balance.toFixed(6) + " USDT";
-      document.getElementById("speed20mDisplay").textContent = "+" + rate20m.toFixed(5) + " USDT";
-      document.getElementById("speed1mDisplay").textContent = rate1m.toFixed(7) + " " + tr.speed1mUnit;
-      document.getElementById("minedDisplay").textContent = state.minedPending.toFixed(6) + " USDT";
+      document.getElementById("tierBadge").textContent = "LVL " + getLevel();
+      document.getElementById("balanceDisplay").innerHTML =
+        state.balance.toFixed(6) + `<span class="balance-unit">USDT</span>`;
+      document.getElementById("speed20mDisplay").innerHTML =
+        "+" + rate20m.toFixed(5) + ` <span>USDT / 20m</span>`;
+      document.getElementById("speed1mDisplay").textContent = rate1m.toFixed(7);
+      document.getElementById("minedDisplay").textContent = state.minedPending.toFixed(6);
       document.getElementById("progressPct").textContent = pct.toFixed(1) + "%";
       document.getElementById("progressFill").style.width = pct + "%";
       document.getElementById("minersSummary").textContent = tr.minersSummary(getTotalMinersCount(), rate20m);
       document.getElementById("refCountDisplay").textContent = String(state.referrals || 0);
       document.getElementById("refLinkBox").textContent = refLink;
+
       const shopInfo = document.getElementById("shopBalanceInfo");
       if (shopInfo) {
         shopInfo.textContent = tr.shopBalanceInfo(state.balance);
       }
       renderWalletAddress();
       renderSubBonusButton();
+    }
+
+    function openTab(tabId) {
+      document.querySelectorAll(".nav-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.tab === tabId);
+      });
+      document.querySelectorAll(".tab-page").forEach((p) => {
+        p.classList.toggle("active", p.id === tabId);
+      });
+      pullServerState();
     }
 
     async function copyText(str) {
@@ -1348,10 +1863,18 @@
 
         if (typeof data.balance === "number") {
           state.balance = Number(data.balance);
-          saveState();
-          renderShop();
-          renderUI();
         }
+        if (data.history && typeof data.history === "object") {
+          state.history = {
+            deposits: Array.isArray(data.history.deposits) ? data.history.deposits : [],
+            withdrawals: Array.isArray(data.history.withdrawals) ? data.history.withdrawals : []
+          };
+        }
+        saveState();
+        renderShop();
+        renderHistory();
+        renderUI();
+
         if (typeof onSuccess === "function") {
           onSuccess(data);
         }
@@ -1373,13 +1896,25 @@
     });
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-        document.querySelectorAll(".tab-page").forEach((p) => p.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
-        await pullServerState();
+      btn.addEventListener("click", () => {
+        openTab(btn.dataset.tab);
       });
+    });
+
+    document.getElementById("centerBonusBtn").addEventListener("click", () => {
+      openTab("tab-bonus");
+    });
+
+    document.getElementById("quickDepositBtn").addEventListener("click", () => {
+      openTab("tab-deposit");
+    });
+
+    document.getElementById("refreshDepHistBtn").addEventListener("click", () => {
+      pullServerState();
+    });
+
+    document.getElementById("refreshWdrHistBtn").addEventListener("click", () => {
+      pullServerState();
     });
 
     document.getElementById("depNetwork").addEventListener("change", renderWalletAddress);
@@ -1519,10 +2054,10 @@
       loadState();
       tickMining();
       applyLanguage(currentLang);
-      setSplashProgress(34, t().splashLoading);
+      setSplashProgress(35, t().splashLoading);
 
       await registerReferralIfNeeded();
-      setSplashProgress(68, t().splashSync);
+      setSplashProgress(72, t().splashSync);
       await pullServerState();
       setSplashProgress(100, t().splashSync);
 
