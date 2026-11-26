@@ -119,13 +119,15 @@
       font-weight: 700;
       cursor: pointer;
       transition: opacity 0.15s ease;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
     }
 
     .btn:active {
       opacity: 0.85;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .btn-green {
@@ -136,12 +138,6 @@
     .btn-blue {
       background: #2563eb;
       color: #ffffff;
-    }
-
-    .btn-gray {
-      background: #1e2d3d;
-      color: #e5e7eb;
-      margin-bottom: 10px;
     }
 
     .progress-top {
@@ -380,14 +376,11 @@
 
     <div id="tab-bonus" class="tab-page">
       <div class="card">
-        <div class="section-title">Бонус за подписку на канал</div>
+        <div class="section-title">Ежедневный бонус</div>
         <div class="subtitle" style="margin-bottom: 12px;">
-          Подпишитесь на сообщество <strong>MintTetherHub</strong> и получите разовый бонус <strong>+0.10 USDT</strong>.
+          Получайте <strong>+0.001 USDT</strong> каждые 24 часа за ежедневный вход.
         </div>
-        <a class="btn btn-gray" href="https://t.me/MintTetherHub" target="_blank" rel="noopener noreferrer">
-          🌐 Перейти в канал @MintTetherHub
-        </a>
-        <button class="btn btn-green" id="subBonusBtn">✅ Я подписался — забрать +0.10 USDT</button>
+        <button class="btn btn-green" id="bonusBtn">🎁 Забрать бонус (+0.001 USDT)</button>
         <div class="status-msg" id="bonusStatus"></div>
       </div>
     </div>
@@ -410,12 +403,13 @@
       tg.expand();
     }
 
+    const API_BASE_URL = "https://warm-brooms-stay.loca.lt";
     const CYCLE_MINUTES = 20;
     const BASE_RATE_PER_20M = 0.00002;
     const MIN_WITHDRAW = 35;
-    const CHANNEL_BONUS = 0.10;
+    const DAILY_BONUS_AMOUNT = 0.001;
+    const DAY_MS = 24 * 60 * 60 * 1000;
 
-    // Минимальный майнер стоит $8.00
     const MINERS = [
       { id: "nano", name: "Nano Rig", price: 8, rate20m: 0.05 },
       { id: "core", name: "Core Node", price: 25, rate20m: 0.22 },
@@ -424,17 +418,16 @@
       { id: "titan", name: "Titan Farm", price: 1000, rate20m: 12.00 }
     ];
 
-    const uid = String(
-      (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) ||
-      "5224967757"
-    );
+    const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+    const uid = String((tgUser && tgUser.id) || "5224967757");
+    const userLabel = tgUser ? (tgUser.username ? "@" + tgUser.username : tgUser.first_name || "") : "";
     const STORAGE_KEY = "minttether_state_" + uid;
 
     let state = {
       balance: 0,
       minedPending: 0,
       lastTick: Date.now(),
-      channelBonusClaimed: false,
+      lastDailyBonus: 0,
       miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
     };
 
@@ -447,7 +440,7 @@
           balance: Number.isFinite(Number(parsed.balance)) ? Math.max(0, Number(parsed.balance)) : 0,
           minedPending: Number.isFinite(Number(parsed.minedPending)) ? Math.max(0, Number(parsed.minedPending)) : 0,
           lastTick: Number.isFinite(Number(parsed.lastTick)) && Number(parsed.lastTick) > 0 ? Number(parsed.lastTick) : Date.now(),
-          channelBonusClaimed: Boolean(parsed.channelBonusClaimed),
+          lastDailyBonus: Number.isFinite(Number(parsed.lastDailyBonus)) ? Number(parsed.lastDailyBonus) : 0,
           miners: {
             nano: Number(parsed.miners && parsed.miners.nano) || 0,
             core: Number(parsed.miners && parsed.miners.core) || 0,
@@ -518,19 +511,6 @@
       }
     }
 
-    function renderBonusButton() {
-      const btn = document.getElementById("subBonusBtn");
-      if (state.channelBonusClaimed) {
-        btn.textContent = "✓ Бонус за подписку уже получен";
-        btn.disabled = true;
-        btn.style.opacity = "0.65";
-      } else {
-        btn.textContent = "✅ Я подписался — забрать +0.10 USDT";
-        btn.disabled = false;
-        btn.style.opacity = "1";
-      }
-    }
-
     function renderUI() {
       const rate20m = getRatePer20m();
       const rate1m = rate20m / CYCLE_MINUTES;
@@ -545,34 +525,47 @@
       document.getElementById("progressFill").style.width = pct + "%";
       document.getElementById("minersSummary").textContent =
         `Куплено майнеров: ${getTotalMinersCount()} • Скорость: ${rate20m.toFixed(5)} USDT / 20 мин`;
-      renderBonusButton();
     }
 
-    function sendPayloadToBot(dataObj, statusEl, submitBtn) {
-      submitBtn.disabled = true;
-      let fallbackTimer = null;
-
-      const finishWithFallback = () => {
-        submitBtn.disabled = false;
-        statusEl.className = "status-msg err";
-        statusEl.textContent =
-          "Telegram не закрыл окно после sendData. Проверьте, что бот запущен в консоли и Mini App открыта именно через кнопку в боте.";
-      };
+    async function submitRequest(endpoint, bodyObj, statusEl, btn) {
+      btn.disabled = true;
+      statusEl.className = "status-msg";
+      statusEl.textContent = "Отправка заявки...";
 
       try {
-        if (tg && typeof tg.sendData === "function") {
-          tg.sendData(JSON.stringify(dataObj));
-          fallbackTimer = setTimeout(finishWithFallback, 1500);
-          return;
+        const res = await fetch(API_BASE_URL + endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "bypass-tunnel-reminder": "true"
+          },
+          body: JSON.stringify({
+            userId: uid,
+            userLabel,
+            ...bodyObj
+          })
+        });
+
+        const text = await res.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (_) {
+          throw new Error("Сервер или localtunnel вернул не JSON. Откройте тунель в браузере один раз или проверьте консоль.");
         }
-        submitBtn.disabled = false;
-        statusEl.className = "status-msg err";
-        statusEl.textContent = "Откройте Mini App через кнопку в Telegram-боте для отправки заявки.";
+
+        if (!res.ok || !data.ok) {
+          throw new Error((data && data.error) || "Ошибка при отправке заявки");
+        }
+
+        statusEl.className = "status-msg";
+        statusEl.textContent = `Заявка отправлена! Номер: ${data.id}`;
       } catch (err) {
-        if (fallbackTimer) clearTimeout(fallbackTimer);
-        submitBtn.disabled = false;
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Ошибка отправки: " + (err && err.message ? err.message : "неизвестная ошибка");
+        statusEl.textContent =
+          "Ошибка: " + (err && err.message ? err.message : "не удалось связаться с сервером");
+      } finally {
+        btn.disabled = false;
       }
     }
 
@@ -594,19 +587,22 @@
       renderUI();
     });
 
-    document.getElementById("subBonusBtn").addEventListener("click", () => {
+    document.getElementById("bonusBtn").addEventListener("click", () => {
       const statusEl = document.getElementById("bonusStatus");
-      if (state.channelBonusClaimed) {
+      const now = Date.now();
+      if (now - (state.lastDailyBonus || 0) < DAY_MS) {
+        const leftMs = DAY_MS - (now - (state.lastDailyBonus || 0));
+        const leftHours = Math.ceil(leftMs / (60 * 60 * 1000));
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Бонус за подписку на @MintTetherHub уже был начислен.";
+        statusEl.textContent = `Бонус уже получен. Следующий через ~${leftHours} ч.`;
         return;
       }
-      state.balance = Number((state.balance + CHANNEL_BONUS).toFixed(6));
-      state.channelBonusClaimed = true;
+      state.balance = Number((state.balance + DAILY_BONUS_AMOUNT).toFixed(6));
+      state.lastDailyBonus = now;
       saveState();
       renderUI();
       statusEl.className = "status-msg";
-      statusEl.textContent = "Начислено +0.10 USDT за подписку на канал @MintTetherHub.";
+      statusEl.textContent = "Начислено +0.001 USDT! Следующий бонус через 24 часа.";
     });
 
     document.getElementById("depSubmitBtn").addEventListener("click", (e) => {
@@ -620,9 +616,7 @@
         return;
       }
 
-      statusEl.className = "status-msg";
-      statusEl.textContent = "Отправка заявки в бота...";
-      sendPayloadToBot({ type: "deposit", network, amount }, statusEl, e.currentTarget);
+      submitRequest("/api/deposit", { network, amount }, statusEl, e.currentTarget);
     });
 
     document.getElementById("wdrSubmitBtn").addEventListener("click", (e) => {
@@ -649,9 +643,7 @@
         return;
       }
 
-      statusEl.className = "status-msg";
-      statusEl.textContent = "Отправка заявки на вывод в бота...";
-      sendPayloadToBot({ type: "withdraw", network, address, amount }, statusEl, e.currentTarget);
+      submitRequest("/api/withdraw", { network, address, amount }, statusEl, e.currentTarget);
     });
 
     loadState();
