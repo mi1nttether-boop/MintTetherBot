@@ -365,7 +365,7 @@
           <label for="depAmount">Сумма (USDT)</label>
           <input type="number" id="depAmount" min="1" step="0.01" placeholder="Например, 10" />
         </div>
-        <button class="btn btn-green" id="depSubmitBtn">Отправить заявку на пополнение</button>
+        <button class="btn btn-green" id="depSubmitBtn">Сформировать заявку на пополнение</button>
         <div class="status-msg" id="depStatus"></div>
       </div>
     </div>
@@ -389,7 +389,7 @@
           <label for="wdrAmount">Сумма вывода (USDT)</label>
           <input type="number" id="wdrAmount" min="35" step="0.01" placeholder="Минимум 35.00" />
         </div>
-        <button class="btn btn-blue" id="wdrSubmitBtn">Отправить заявку на вывод</button>
+        <button class="btn btn-blue" id="wdrSubmitBtn">Сформировать заявку на вывод</button>
         <div class="status-msg" id="wdrStatus"></div>
       </div>
     </div>
@@ -596,28 +596,38 @@
       renderSubBonusButton();
     }
 
-    function sendDirectToBot(payloadObj, textCommand, statusEl) {
-      let sentViaWebApp = false;
+    async function copyText(str) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(str);
+        return true;
+      }
+      const tmp = document.createElement("textarea");
+      tmp.value = str;
+      document.body.appendChild(tmp);
+      tmp.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(tmp);
+      return ok;
+    }
+
+    async function prepareBotRequest(textCommand, statusEl) {
+      let copied = false;
       try {
-        if (tg && typeof tg.sendData === "function") {
-          tg.sendData(JSON.stringify({ userId: uid, ...payloadObj }));
-          sentViaWebApp = true;
-        }
+        copied = await copyText(textCommand);
       } catch (_) {}
 
-      const shareUrl = `https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(textCommand)}`;
+      const botUrl = `https://t.me/${BOT_USERNAME}`;
       statusEl.className = "status-msg";
-      statusEl.innerHTML = sentViaWebApp
-        ? `Заявка отправлена в бота. Если окно не закрылось — <a href="${shareUrl}" style="color:#93c5fd;">откройте чат с ботом</a>.`
-        : `Перейдите в бота для отправки: <a href="${shareUrl}" style="color:#93c5fd;">открыть @${BOT_USERNAME}</a>`;
+      statusEl.innerHTML =
+        (copied ? "Код заявки скопирован в буфер! " : "Скопируйте код заявки: ") +
+        `<br><code style="color:#93c5fd;">${textCommand}</code>` +
+        `<br><a href="${botUrl}" style="color:#34d399;font-weight:700;">👉 Открыть @${BOT_USERNAME} и вставить</a>`;
 
-      if (!sentViaWebApp) {
+      setTimeout(() => {
         if (tg && typeof tg.openTelegramLink === "function") {
-          tg.openTelegramLink(shareUrl);
-        } else {
-          window.open(shareUrl, "_blank", "noopener,noreferrer");
+          tg.openTelegramLink(botUrl);
         }
-      }
+      }, 250);
     }
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
@@ -674,16 +684,7 @@
     document.getElementById("copyRefBtn").addEventListener("click", async () => {
       const statusEl = document.getElementById("refStatus");
       try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(refLink);
-        } else {
-          const tmp = document.createElement("textarea");
-          tmp.value = refLink;
-          document.body.appendChild(tmp);
-          tmp.select();
-          document.execCommand("copy");
-          document.body.removeChild(tmp);
-        }
+        await copyText(refLink);
         statusEl.className = "status-msg";
         statusEl.textContent = "Реферальная ссылка скопирована!";
       } catch (_) {
@@ -704,7 +705,7 @@
       }
 
       const cmd = `#DEPOSIT | UID:${uid} | NET:${network} | AMT:${amount}`;
-      sendDirectToBot({ type: "deposit", network, amount }, cmd, statusEl);
+      prepareBotRequest(cmd, statusEl);
     });
 
     document.getElementById("wdrSubmitBtn").addEventListener("click", () => {
@@ -732,7 +733,7 @@
       }
 
       const cmd = `#WITHDRAW | UID:${uid} | NET:${network} | AMT:${amount} | ADDR:${address}`;
-      sendDirectToBot({ type: "withdraw", network, address, amount }, cmd, statusEl);
+      prepareBotRequest(cmd, statusEl);
     });
 
     loadState();
