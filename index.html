@@ -20,6 +20,115 @@
       min-height: 100vh;
     }
 
+    /* Splash Loader */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 50% 20%, #0d47a1 0%, #071b36 48%, #040911 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 36px 22px 42px;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    .splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-glow-top {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 220px;
+      background: rgba(37, 99, 235, 0.45);
+      filter: blur(70px);
+      pointer-events: none;
+    }
+
+    .splash-hero {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .splash-bot-wrap {
+      width: 230px;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 18px 34px rgba(14, 165, 233, 0.35));
+      animation: floatBot 2.6s ease-in-out infinite;
+    }
+
+    @keyframes floatBot {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    .splash-status {
+      margin-top: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: #60a5fa;
+      text-transform: uppercase;
+      text-align: center;
+      text-shadow: 0 0 18px rgba(59, 130, 246, 0.7);
+    }
+
+    .splash-footer {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .splash-bar-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .splash-pct {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+    }
+
+    .splash-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(96, 165, 250, 0.35);
+      border-radius: 999px;
+      overflow: hidden;
+      padding: 1px;
+    }
+
+    .splash-fill {
+      height: 100%;
+      width: 6%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #38bdf8, #34d399);
+      transition: width 0.2s ease;
+    }
+
     .app {
       max-width: 520px;
       margin: 0 auto;
@@ -37,7 +146,39 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      background: #0b1118;
+      border: 1px solid #263649;
+      border-radius: 10px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 7px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .lang-btn.active {
+      background: #2563eb;
+      color: #ffffff;
     }
 
     .title {
@@ -129,7 +270,7 @@
     }
 
     .btn:disabled {
-      opacity: 0.6;
+      opacity: 0.45;
       cursor: not-allowed;
     }
 
@@ -328,32 +469,88 @@
   </style>
 </head>
 <body>
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-glow-top"></div>
+    <div class="splash-hero">
+      <div class="splash-bot-wrap">
+        <svg viewBox="0 0 240 260" width="220" height="240" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="armorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1e293b" />
+              <stop offset="55%" stop-color="#0f172a" />
+              <stop offset="100%" stop-color="#020617" />
+            </linearGradient>
+            <linearGradient id="visorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#2563eb" />
+              <stop offset="50%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#1d4ed8" />
+            </linearGradient>
+          </defs>
+          <!-- Shoulders & Chest -->
+          <path d="M45 190 C50 148, 82 135, 120 135 C158 135, 190 148, 195 190 L212 250 L28 250 Z" fill="url(#armorGrad)" stroke="#38bdf8" stroke-width="2" />
+          <path d="M84 162 L120 194 L156 162 L144 216 L96 216 Z" fill="#0b1322" stroke="#2563eb" stroke-width="2" />
+          <path d="M102 174 L120 190 L138 174" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+          <!-- Neck & Cable -->
+          <rect x="103" y="114" width="34" height="28" rx="6" fill="#0f172a" stroke="#334155" stroke-width="2" />
+          <path d="M86 105 C56 118, 52 158, 72 184" fill="none" stroke="#0284c7" stroke-width="6" stroke-linecap="round" />
+          <!-- Helmet -->
+          <path d="M74 52 C84 22, 156 22, 166 52 C176 80, 168 118, 120 124 C72 118, 64 80, 74 52 Z" fill="url(#armorGrad)" stroke="#60a5fa" stroke-width="2.5" />
+          <!-- Ear fins -->
+          <path d="M72 56 L50 38 L62 82 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+          <path d="M168 56 L190 38 L178 82 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+          <!-- Glowing Visor -->
+          <path d="M82 66 C102 58, 138 58, 158 66 C154 88, 138 102, 120 104 C102 102, 86 88, 82 66 Z" fill="#061224" stroke="url(#visorGrad)" stroke-width="3" />
+          <path d="M90 73 C108 69, 132 69, 150 73" fill="none" stroke="#38bdf8" stroke-width="3.5" stroke-linecap="round" />
+          <!-- Phone held by hand -->
+          <rect x="158" y="182" width="36" height="54" rx="6" fill="#090d16" stroke="#60a5fa" stroke-width="2" />
+          <circle cx="176" cy="226" r="2.5" fill="#38bdf8" />
+        </svg>
+      </div>
+      <div class="splash-status" id="splashStatus">ПОДКЛЮЧЕНИЕ...</div>
+    </div>
+    <div class="splash-footer">
+      <div class="splash-bar-row">
+        <div class="splash-pct" id="splashPct">6%</div>
+      </div>
+      <div class="splash-track">
+        <div class="splash-fill" id="splashFill"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="app">
     <div class="card">
       <div class="header-row">
         <div>
-          <div class="title">MintTether Terminal</div>
-          <div class="subtitle">USDT Mining &amp; Finance Suite</div>
+          <div class="title" id="appTitle">MintTether Terminal</div>
+          <div class="subtitle" id="appSubtitle">USDT Mining &amp; Finance Suite</div>
         </div>
-        <div class="uid-badge" id="uidBadge">UID: ---</div>
+        <div class="header-right">
+          <div class="lang-switcher" aria-label="Language">
+            <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="uk">UK</button>
+          </div>
+          <div class="uid-badge" id="uidBadge">UID: ---</div>
+        </div>
       </div>
     </div>
 
     <div id="tab-miner" class="tab-page active">
       <div class="card">
-        <div class="balance-label">Общий баланс</div>
+        <div class="balance-label" id="balanceLabel">Общий баланс</div>
         <div class="balance-value" id="balanceDisplay">0.000000 USDT</div>
 
         <div class="stats-grid">
           <div class="stat-box">
-            <div class="stat-title">Скорость / 20 мин</div>
+            <div class="stat-title" id="speed20mLabel">Скорость / 20 мин</div>
             <div class="stat-main" id="speed20mDisplay">+0.00002 USDT</div>
             <div class="stat-sub" id="speed1mDisplay">0.000001 USDT / мин</div>
           </div>
           <div class="stat-box">
-            <div class="stat-title">Намайнено</div>
+            <div class="stat-title" id="minedLabel">Намайнено</div>
             <div class="stat-main gold" id="minedDisplay">0.000000 USDT</div>
-            <div class="stat-sub">Цикл: 20 минут</div>
+            <div class="stat-sub" id="cycleLabel">Цикл: 20 минут</div>
           </div>
         </div>
 
@@ -362,28 +559,30 @@
 
       <div class="card">
         <div class="progress-top">
-          <span>Прогресс до вывода ($35.00)</span>
+          <span id="progressLabel">Прогресс до вывода ($35.00)</span>
           <span id="progressPct">0.0%</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="subtitle" id="minersSummary">Куплено майнеров: 0 • Базовый режим: 0.00002 USDT / 20 мин</div>
+        <div class="subtitle" id="minersSummary">Куплено майнеров: 0 • Скорость: 0.00002 USDT / 20 мин</div>
       </div>
     </div>
 
     <div id="tab-shop" class="tab-page">
       <div class="card">
-        <div class="section-title">Магазин майнеров</div>
+        <div class="section-title" id="shopTitle">Магазин майнеров</div>
+        <div class="subtitle" style="margin-bottom: 12px;" id="shopBalanceInfo">Доступный баланс: 0.000000 USDT</div>
         <div id="shopList"></div>
+        <div class="status-msg" id="shopStatus"></div>
       </div>
     </div>
 
     <div id="tab-deposit" class="tab-page">
       <div class="card">
-        <div class="section-title">Пополнение баланса</div>
+        <div class="section-title" id="depTitle">Пополнение баланса</div>
         <div class="field">
-          <label for="depNetwork">Сеть</label>
+          <label for="depNetwork" id="depNetworkLabel">Сеть</label>
           <select id="depNetwork">
             <option value="BEP20">BEP20 (USDT)</option>
             <option value="TRC20">TRC20 (USDT)</option>
@@ -397,11 +596,11 @@
             <button type="button" class="btn btn-gray btn-small" style="margin-bottom:0;" id="copyWalletBtn">📋 Копировать</button>
           </div>
           <div class="wallet-addr" id="walletAddressDisplay"></div>
-          <div class="subtitle">Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».</div>
+          <div class="subtitle" id="walletHint">Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».</div>
         </div>
 
         <div class="field">
-          <label for="depAmount">Сумма оплаты (USDT)</label>
+          <label for="depAmount" id="depAmountLabel">Сумма оплаты (USDT)</label>
           <input type="number" id="depAmount" min="1" step="0.01" placeholder="Например, 10" />
         </div>
         <button class="btn btn-green" id="depSubmitBtn">✅ Я оплатил — отправить заявку</button>
@@ -411,9 +610,9 @@
 
     <div id="tab-withdraw" class="tab-page">
       <div class="card">
-        <div class="section-title">Вывод средств (от $35.00 USDT)</div>
+        <div class="section-title" id="wdrTitle">Вывод средств (от $35.00 USDT)</div>
         <div class="field">
-          <label for="wdrNetwork">Сеть</label>
+          <label for="wdrNetwork" id="wdrNetworkLabel">Сеть</label>
           <select id="wdrNetwork">
             <option value="BEP20">BEP20 (USDT)</option>
             <option value="TRC20">TRC20 (USDT)</option>
@@ -421,11 +620,11 @@
           </select>
         </div>
         <div class="field">
-          <label for="wdrAddress">Адрес кошелька</label>
+          <label for="wdrAddress" id="wdrAddressLabel">Адрес кошелька</label>
           <input type="text" id="wdrAddress" placeholder="Введите адрес кошелька USDT" />
         </div>
         <div class="field">
-          <label for="wdrAmount">Сумма вывода (USDT)</label>
+          <label for="wdrAmount" id="wdrAmountLabel">Сумма вывода (USDT)</label>
           <input type="number" id="wdrAmount" min="35" step="0.01" placeholder="Минимум 35.00" />
         </div>
         <button class="btn btn-blue" id="wdrSubmitBtn">Отправить заявку на вывод</button>
@@ -435,8 +634,8 @@
 
     <div id="tab-bonus" class="tab-page">
       <div class="card">
-        <div class="section-title">Ежедневный бонус</div>
-        <div class="subtitle" style="margin-bottom: 12px;">
+        <div class="section-title" id="dailyBonusTitle">Ежедневный бонус</div>
+        <div class="subtitle" style="margin-bottom: 12px;" id="dailyBonusDesc">
           Получайте <strong>+0.001 USDT</strong> каждые 24 часа за активность.
         </div>
         <button class="btn btn-green" id="bonusBtn">🎁 Забрать бонус (+0.001 USDT)</button>
@@ -444,11 +643,11 @@
       </div>
 
       <div class="card">
-        <div class="section-title">Бонус за подписку на канал</div>
-        <div class="subtitle" style="margin-bottom: 12px;">
+        <div class="section-title" id="subBonusTitle">Бонус за подписку на канал</div>
+        <div class="subtitle" style="margin-bottom: 12px;" id="subBonusDesc">
           Подпишитесь на <strong>@MintTetherHub</strong> и получите разовый бонус <strong>+0.10 USDT</strong>.
         </div>
-        <a class="btn btn-gray" href="https://t.me/MintTetherHub" target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-gray" href="https://t.me/MintTetherHub" target="_blank" rel="noopener noreferrer" id="subChannelLink">
           🌐 Подписаться на @MintTetherHub
         </a>
         <button class="btn btn-blue" id="subBonusBtn">✅ Я подписался — забрать +0.10 USDT</button>
@@ -458,15 +657,15 @@
 
     <div id="tab-ref" class="tab-page">
       <div class="card">
-        <div class="section-title">Реферальная программа</div>
-        <div class="subtitle" style="margin-bottom: 12px;">
+        <div class="section-title" id="refTitle">Реферальная программа</div>
+        <div class="subtitle" style="margin-bottom: 12px;" id="refDesc">
           Делитесь своей ссылкой и приглашайте друзей в MintTether.
         </div>
         <div class="stat-box" style="margin-bottom: 12px;">
-          <div class="stat-title">Приглашено рефералов</div>
+          <div class="stat-title" id="refCountLabel">Приглашено рефералов</div>
           <div class="stat-main" id="refCountDisplay">0</div>
         </div>
-        <label>Ваша реферальная ссылка</label>
+        <label id="refLinkLabel">Ваша реферальная ссылка</label>
         <div class="ref-box" id="refLinkBox">https://t.me/MintTetherBot?start=ref_5224967757</div>
         <button class="btn btn-blue" id="copyRefBtn">📋 Скопировать ссылку</button>
         <div class="status-msg" id="refStatus"></div>
@@ -476,12 +675,12 @@
 
   <nav class="bottom-nav">
     <div class="nav-grid">
-      <button class="nav-btn active" data-tab="tab-miner">⛏️ Майнер</button>
-      <button class="nav-btn" data-tab="tab-shop">🛒 Магазин</button>
-      <button class="nav-btn" data-tab="tab-deposit">💳 Депозит</button>
-      <button class="nav-btn" data-tab="tab-withdraw">💸 Вывод</button>
-      <button class="nav-btn" data-tab="tab-bonus">🎁 Бонус</button>
-      <button class="nav-btn" data-tab="tab-ref">👥 Реф</button>
+      <button class="nav-btn active" data-tab="tab-miner" id="navMiner">⛏️ Майнер</button>
+      <button class="nav-btn" data-tab="tab-shop" id="navShop">🛒 Магазин</button>
+      <button class="nav-btn" data-tab="tab-deposit" id="navDeposit">💳 Депозит</button>
+      <button class="nav-btn" data-tab="tab-withdraw" id="navWithdraw">💸 Вывод</button>
+      <button class="nav-btn" data-tab="tab-bonus" id="navBonus">🎁 Бонус</button>
+      <button class="nav-btn" data-tab="tab-ref" id="navRef">👥 Реф</button>
     </div>
   </nav>
 
@@ -515,12 +714,235 @@
       { id: "titan", name: "Titan Farm", price: 1000, rate20m: 12.00 }
     ];
 
+    const I18N = {
+      ru: {
+        splashLoading: "ПОДКЛЮЧЕНИЕ...",
+        splashSync: "СИНХРОНИЗАЦИЯ...",
+        appTitle: "MintTether Terminal",
+        appSubtitle: "USDT Mining & Finance Suite",
+        balanceLabel: "Общий баланс",
+        speed20mLabel: "Скорость / 20 мин",
+        speed1mUnit: "USDT / мин",
+        minedLabel: "Намайнено",
+        cycleLabel: "Цикл: 20 минут",
+        claimBtn: "⛏️ Собрать намайненное",
+        progressLabel: "Прогресс до вывода ($35.00)",
+        minersSummary: (count, rate) => `Куплено майнеров: ${count} • Скорость: ${rate.toFixed(5)} USDT / 20 мин`,
+        shopTitle: "Магазин майнеров",
+        shopBalanceInfo: (bal) => `Доступный баланс: ${bal.toFixed(6)} USDT`,
+        ownedLabel: "куплено",
+        per20mUnit: "USDT / 20 мин",
+        priceLabel: "Цена",
+        buyBtn: "Купить",
+        buyingStatus: "Оформление покупки...",
+        noFundsMiner: (name) => `Недостаточно средств на балансе для покупки ${name}.`,
+        boughtMiner: (name, bal) => `Куплено ${name}! Новый баланс: ${bal.toFixed(6)} USDT`,
+        netErrMiner: "Ошибка связи с сервером при покупке.",
+        depTitle: "Пополнение баланса",
+        depNetworkLabel: "Сеть",
+        walletPrefix: (net) => `Адрес для перевода (${net}):`,
+        copyBtn: "📋 Копировать",
+        walletHint: "Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».",
+        depAmountLabel: "Сумма оплаты (USDT)",
+        depAmountPlaceholder: "Например, 10",
+        depSubmitBtn: "✅ Я оплатил — отправить заявку",
+        wdrTitle: "Вывод средств (от $35.00 USDT)",
+        wdrNetworkLabel: "Сеть",
+        wdrAddressLabel: "Адрес кошелька",
+        wdrAddressPlaceholder: "Введите адрес кошелька USDT",
+        wdrAmountLabel: "Сумма вывода (USDT)",
+        wdrAmountPlaceholder: "Минимум 35.00",
+        wdrSubmitBtn: "Отправить заявку на вывод",
+        dailyBonusTitle: "Ежедневный бонус",
+        dailyBonusDesc: "Получайте <strong>+0.001 USDT</strong> каждые 24 часа за активность.",
+        bonusBtn: "🎁 Забрать бонус (+0.001 USDT)",
+        subBonusTitle: "Бонус за подписку на канал",
+        subBonusDesc: "Подпишитесь на <strong>@MintTetherHub</strong> и получите разовый бонус <strong>+0.10 USDT</strong>.",
+        subChannelLink: "🌐 Подписаться на @MintTetherHub",
+        subBonusBtn: "✅ Я подписался — забрать +0.10 USDT",
+        subBonusClaimedBtn: "✓ Бонус за подписку уже получен",
+        refTitle: "Реферальная программа",
+        refDesc: "Делитесь своей ссылкой и приглашайте друзей в MintTether.",
+        refCountLabel: "Приглашено рефералов",
+        refLinkLabel: "Ваша реферальная ссылка",
+        copyRefBtn: "📋 Скопировать ссылку",
+        navMiner: "⛏️ Майнер",
+        navShop: "🛒 Магазин",
+        navDeposit: "💳 Депозит",
+        navWithdraw: "💸 Вывод",
+        navBonus: "🎁 Бонус",
+        navRef: "👥 Реф",
+        sendingReq: "Отправка заявки...",
+        reqSent: (id) => `Заявка отправлена! Номер: ${id}. Ожидайте проверки администратора.`,
+        reqErr: (msg) => `Ошибка: ${msg}`,
+        invalidAmount: "Введите корректную сумму оплаты.",
+        noAddress: "Укажите адрес кошелька для вывода.",
+        minWithdrawErr: "Минимальная сумма вывода составляет $35.00 USDT.",
+        insufficientBalance: "Недостаточно средств на балансе для вывода этой суммы.",
+        copiedWallet: "Адрес кошелька скопирован!",
+        copyManual: "Скопируйте адрес вручную.",
+        copiedRef: "Реферальная ссылка скопирована!",
+        bonusCooldown: (h) => `Бонус уже получен. Следующий через ~${h} ч.`,
+        bonusClaimed: "Начислено +0.001 USDT! Следующий бонус через 24 часа.",
+        subBonusAlready: "Бонус за подписку на @MintTetherHub уже был начислен.",
+        subBonusGot: "Начислено +0.10 USDT за подписку на канал @MintTetherHub."
+      },
+      en: {
+        splashLoading: "CONNECTING...",
+        splashSync: "SYNCING DATA...",
+        appTitle: "MintTether Terminal",
+        appSubtitle: "USDT Mining & Finance Suite",
+        balanceLabel: "Total Balance",
+        speed20mLabel: "Speed / 20 min",
+        speed1mUnit: "USDT / min",
+        minedLabel: "Mined",
+        cycleLabel: "Cycle: 20 minutes",
+        claimBtn: "⛏️ Claim Mined",
+        progressLabel: "Progress to withdraw ($35.00)",
+        minersSummary: (count, rate) => `Miners owned: ${count} • Speed: ${rate.toFixed(5)} USDT / 20 min`,
+        shopTitle: "Miner Shop",
+        shopBalanceInfo: (bal) => `Available balance: ${bal.toFixed(6)} USDT`,
+        ownedLabel: "owned",
+        per20mUnit: "USDT / 20 min",
+        priceLabel: "Price",
+        buyBtn: "Buy",
+        buyingStatus: "Processing purchase...",
+        noFundsMiner: (name) => `Insufficient balance to buy ${name}.`,
+        boughtMiner: (name, bal) => `Purchased ${name}! New balance: ${bal.toFixed(6)} USDT`,
+        netErrMiner: "Network error during purchase.",
+        depTitle: "Deposit Balance",
+        depNetworkLabel: "Network",
+        walletPrefix: (net) => `Deposit address (${net}):`,
+        copyBtn: "📋 Copy",
+        walletHint: "Send USDT to the address above, enter the amount, and tap «I have paid».",
+        depAmountLabel: "Amount (USDT)",
+        depAmountPlaceholder: "For example, 10",
+        depSubmitBtn: "✅ I have paid — submit request",
+        wdrTitle: "Withdraw Funds (from $35.00 USDT)",
+        wdrNetworkLabel: "Network",
+        wdrAddressLabel: "Wallet Address",
+        wdrAddressPlaceholder: "Enter USDT wallet address",
+        wdrAmountLabel: "Withdraw Amount (USDT)",
+        wdrAmountPlaceholder: "Minimum 35.00",
+        wdrSubmitBtn: "Submit withdrawal request",
+        dailyBonusTitle: "Daily Bonus",
+        dailyBonusDesc: "Get <strong>+0.001 USDT</strong> every 24 hours for activity.",
+        bonusBtn: "🎁 Claim Bonus (+0.001 USDT)",
+        subBonusTitle: "Channel Subscription Bonus",
+        subBonusDesc: "Subscribe to <strong>@MintTetherHub</strong> and get a one-time <strong>+0.10 USDT</strong> bonus.",
+        subChannelLink: "🌐 Subscribe to @MintTetherHub",
+        subBonusBtn: "✅ I subscribed — claim +0.10 USDT",
+        subBonusClaimedBtn: "✓ Subscription bonus already claimed",
+        refTitle: "Referral Program",
+        refDesc: "Share your referral link and invite friends to MintTether.",
+        refCountLabel: "Invited referrals",
+        refLinkLabel: "Your referral link",
+        copyRefBtn: "📋 Copy Link",
+        navMiner: "⛏️ Miner",
+        navShop: "🛒 Shop",
+        navDeposit: "💳 Deposit",
+        navWithdraw: "💸 Withdraw",
+        navBonus: "🎁 Bonus",
+        navRef: "👥 Ref",
+        sendingReq: "Sending request...",
+        reqSent: (id) => `Request sent! ID: ${id}. Awaiting admin review.`,
+        reqErr: (msg) => `Error: ${msg}`,
+        invalidAmount: "Enter a valid deposit amount.",
+        noAddress: "Enter a withdrawal wallet address.",
+        minWithdrawErr: "Minimum withdrawal amount is $35.00 USDT.",
+        insufficientBalance: "Insufficient balance for this withdrawal amount.",
+        copiedWallet: "Wallet address copied!",
+        copyManual: "Copy the address manually.",
+        copiedRef: "Referral link copied!",
+        bonusCooldown: (h) => `Bonus already claimed. Next in ~${h}h.`,
+        bonusClaimed: "Credited +0.001 USDT! Next bonus in 24 hours.",
+        subBonusAlready: "Bonus for @MintTetherHub subscription was already claimed.",
+        subBonusGot: "Credited +0.10 USDT for subscribing to @MintTetherHub."
+      },
+      uk: {
+        splashLoading: "ПІДКЛЮЧЕННЯ...",
+        splashSync: "СИНХРОНІЗАЦІЯ...",
+        appTitle: "MintTether Terminal",
+        appSubtitle: "USDT Mining & Finance Suite",
+        balanceLabel: "Загальний баланс",
+        speed20mLabel: "Швидкість / 20 хв",
+        speed1mUnit: "USDT / хв",
+        minedLabel: "Намайнено",
+        cycleLabel: "Цикл: 20 хвилин",
+        claimBtn: "⛏️ Зібрати намайнене",
+        progressLabel: "Прогрес до виводу ($35.00)",
+        minersSummary: (count, rate) => `Куплено майнерів: ${count} • Швидкість: ${rate.toFixed(5)} USDT / 20 хв`,
+        shopTitle: "Магазин майнерів",
+        shopBalanceInfo: (bal) => `Доступний баланс: ${bal.toFixed(6)} USDT`,
+        ownedLabel: "куплено",
+        per20mUnit: "USDT / 20 хв",
+        priceLabel: "Ціна",
+        buyBtn: "Купити",
+        buyingStatus: "Оформлення покупки...",
+        noFundsMiner: (name) => `Недостатньо коштів на балансі для покупки ${name}.`,
+        boughtMiner: (name, bal) => `Куплено ${name}! Новий баланс: ${bal.toFixed(6)} USDT`,
+        netErrMiner: "Помилка зв'язку з сервером під час покупки.",
+        depTitle: "Поповнення балансу",
+        depNetworkLabel: "Мережа",
+        walletPrefix: (net) => `Адреса для переказу (${net}):`,
+        copyBtn: "📋 Копіювати",
+        walletHint: "Перекажіть USDT на вказану адресу, введіть суму та натисніть «Я оплатив».",
+        depAmountLabel: "Сума оплати (USDT)",
+        depAmountPlaceholder: "Наприклад, 10",
+        depSubmitBtn: "✅ Я оплатив — надіслати заявку",
+        wdrTitle: "Вивід коштів (від $35.00 USDT)",
+        wdrNetworkLabel: "Мережа",
+        wdrAddressLabel: "Адреса гаманця",
+        wdrAddressPlaceholder: "Введіть адресу гаманця USDT",
+        wdrAmountLabel: "Сума виводу (USDT)",
+        wdrAmountPlaceholder: "Мінімум 35.00",
+        wdrSubmitBtn: "Надіслати заявку на вивід",
+        dailyBonusTitle: "Щоденний бонус",
+        dailyBonusDesc: "Отримуйте <strong>+0.001 USDT</strong> кожні 24 години за активність.",
+        bonusBtn: "🎁 Забрати бонус (+0.001 USDT)",
+        subBonusTitle: "Бонус за підписку на канал",
+        subBonusDesc: "Підпишіться на <strong>@MintTetherHub</strong> та отримайте разовий бонус <strong>+0.10 USDT</strong>.",
+        subChannelLink: "🌐 Підписатися на @MintTetherHub",
+        subBonusBtn: "✅ Я підписався — забрати +0.10 USDT",
+        subBonusClaimedBtn: "✓ Бонус за підписку вже отримано",
+        refTitle: "Реферальна програма",
+        refDesc: "Діліться своїм посиланням та запрошуйте друзів у MintTether.",
+        refCountLabel: "Запрошено рефералів",
+        refLinkLabel: "Ваше реферальне посилання",
+        copyRefBtn: "📋 Скопіювати посилання",
+        navMiner: "⛏️ Майнер",
+        navShop: "🛒 Магазин",
+        navDeposit: "💳 Депозит",
+        navWithdraw: "💸 Вивід",
+        navBonus: "🎁 Бонус",
+        navRef: "👥 Реф",
+        sendingReq: "Надсилання заявки...",
+        reqSent: (id) => `Заявку надіслано! Номер: ${id}. Очікуйте перевірки адміністратора.`,
+        reqErr: (msg) => `Помилка: ${msg}`,
+        invalidAmount: "Введіть коректну суму оплати.",
+        noAddress: "Вкажіть адресу гаманця для виводу.",
+        minWithdrawErr: "Мінімальна сума виводу становить $35.00 USDT.",
+        insufficientBalance: "Недостатньо коштів на балансі для виводу цієї суми.",
+        copiedWallet: "Адресу гаманця скопійовано!",
+        copyManual: "Скопіюйте адресу вручну.",
+        copiedRef: "Реферальне посилання скопійовано!",
+        bonusCooldown: (h) => `Бонус уже отримано. Наступний приблизно через ${h} год.`,
+        bonusClaimed: "Нараховано +0.001 USDT! Наступний бонус через 24 години.",
+        subBonusAlready: "Бонус за підписку на @MintTetherHub уже було нараховано.",
+        subBonusGot: "Нараховано +0.10 USDT за підписку на канал @MintTetherHub."
+      }
+    };
+
     const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
     const uid = String((tgUser && tgUser.id) || "5224967757");
     const userLabel = tgUser ? (tgUser.username ? "@" + tgUser.username : tgUser.first_name || "") : "";
     const startParam = String((tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "");
     const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${uid}`;
     const STORAGE_KEY = "minttether_state_" + uid;
+    const LANG_KEY = "minttether_lang_" + uid;
+
+    let currentLang = "ru";
+    let isBuyingMiner = false;
 
     let state = {
       balance: 0,
@@ -532,6 +954,97 @@
       invitedBy: null,
       miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
     };
+
+    function t() {
+      return I18N[currentLang] || I18N.ru;
+    }
+
+    function setSplashProgress(pct, text) {
+      const clamped = Math.max(0, Math.min(100, Math.round(pct)));
+      const pctEl = document.getElementById("splashPct");
+      const fillEl = document.getElementById("splashFill");
+      const statusEl = document.getElementById("splashStatus");
+      if (pctEl) pctEl.textContent = clamped + "%";
+      if (fillEl) fillEl.style.width = clamped + "%";
+      if (statusEl && text) statusEl.textContent = text;
+    }
+
+    function hideSplash() {
+      const splash = document.getElementById("splashScreen");
+      if (splash) splash.classList.add("hidden");
+    }
+
+    function loadLang() {
+      try {
+        const saved = localStorage.getItem(LANG_KEY);
+        if (saved && I18N[saved]) {
+          currentLang = saved;
+          return;
+        }
+        const tgLang = (tgUser && tgUser.language_code ? tgUser.language_code : "").toLowerCase();
+        if (tgLang.startsWith("uk")) currentLang = "uk";
+        else if (tgLang.startsWith("en")) currentLang = "en";
+        else currentLang = "ru";
+      } catch (_) {}
+    }
+
+    function applyLanguage(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      try {
+        localStorage.setItem(LANG_KEY, lang);
+      } catch (_) {}
+
+      document.querySelectorAll(".lang-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.lang === lang);
+      });
+
+      const tr = t();
+      document.documentElement.lang = lang;
+      document.getElementById("appTitle").textContent = tr.appTitle;
+      document.getElementById("appSubtitle").textContent = tr.appSubtitle;
+      document.getElementById("balanceLabel").textContent = tr.balanceLabel;
+      document.getElementById("speed20mLabel").textContent = tr.speed20mLabel;
+      document.getElementById("minedLabel").textContent = tr.minedLabel;
+      document.getElementById("cycleLabel").textContent = tr.cycleLabel;
+      document.getElementById("claimBtn").textContent = tr.claimBtn;
+      document.getElementById("progressLabel").textContent = tr.progressLabel;
+      document.getElementById("shopTitle").textContent = tr.shopTitle;
+      document.getElementById("depTitle").textContent = tr.depTitle;
+      document.getElementById("depNetworkLabel").textContent = tr.depNetworkLabel;
+      document.getElementById("copyWalletBtn").textContent = tr.copyBtn;
+      document.getElementById("walletHint").textContent = tr.walletHint;
+      document.getElementById("depAmountLabel").textContent = tr.depAmountLabel;
+      document.getElementById("depAmount").placeholder = tr.depAmountPlaceholder;
+      document.getElementById("depSubmitBtn").textContent = tr.depSubmitBtn;
+      document.getElementById("wdrTitle").textContent = tr.wdrTitle;
+      document.getElementById("wdrNetworkLabel").textContent = tr.wdrNetworkLabel;
+      document.getElementById("wdrAddressLabel").textContent = tr.wdrAddressLabel;
+      document.getElementById("wdrAddress").placeholder = tr.wdrAddressPlaceholder;
+      document.getElementById("wdrAmountLabel").textContent = tr.wdrAmountLabel;
+      document.getElementById("wdrAmount").placeholder = tr.wdrAmountPlaceholder;
+      document.getElementById("wdrSubmitBtn").textContent = tr.wdrSubmitBtn;
+      document.getElementById("dailyBonusTitle").textContent = tr.dailyBonusTitle;
+      document.getElementById("dailyBonusDesc").innerHTML = tr.dailyBonusDesc;
+      document.getElementById("bonusBtn").textContent = tr.bonusBtn;
+      document.getElementById("subBonusTitle").textContent = tr.subBonusTitle;
+      document.getElementById("subBonusDesc").innerHTML = tr.subBonusDesc;
+      document.getElementById("subChannelLink").textContent = tr.subChannelLink;
+      document.getElementById("refTitle").textContent = tr.refTitle;
+      document.getElementById("refDesc").textContent = tr.refDesc;
+      document.getElementById("refCountLabel").textContent = tr.refCountLabel;
+      document.getElementById("refLinkLabel").textContent = tr.refLinkLabel;
+      document.getElementById("copyRefBtn").textContent = tr.copyRefBtn;
+      document.getElementById("navMiner").textContent = tr.navMiner;
+      document.getElementById("navShop").textContent = tr.navShop;
+      document.getElementById("navDeposit").textContent = tr.navDeposit;
+      document.getElementById("navWithdraw").textContent = tr.navWithdraw;
+      document.getElementById("navBonus").textContent = tr.navBonus;
+      document.getElementById("navRef").textContent = tr.navRef;
+
+      renderShop();
+      renderUI();
+    }
 
     function loadState() {
       try {
@@ -563,33 +1076,54 @@
       } catch (_) {}
     }
 
-    async function syncBalanceWithServer(pushLocalIfHigher = false) {
+    async function pullServerState() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/user?userId=${encodeURIComponent(uid)}`);
         const data = await res.json();
         if (!res.ok || !data.ok) return;
 
-        const serverBal = Number(data.balance) || 0;
-        if (pushLocalIfHigher && state.balance > serverBal) {
-          await fetch(`${API_BASE_URL}/api/sync-balance`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userId: uid,
-              username: tgUser && tgUser.username ? tgUser.username : null,
-              first_name: tgUser && tgUser.first_name ? tgUser.first_name : null,
-              balance: state.balance
-            })
-          });
-        } else {
-          state.balance = serverBal;
+        if (typeof data.balance === "number" && Number.isFinite(data.balance)) {
+          state.balance = Math.max(0, Number(data.balance));
         }
-
+        if (data.miners && typeof data.miners === "object") {
+          state.miners = {
+            nano: Number(data.miners.nano) || 0,
+            core: Number(data.miners.core) || 0,
+            pulse: Number(data.miners.pulse) || 0,
+            cluster: Number(data.miners.cluster) || 0,
+            titan: Number(data.miners.titan) || 0
+          };
+        }
         if (typeof data.referrals === "number") {
-          state.referrals = data.referrals;
+          state.referrals = Number(data.referrals);
         }
         saveState();
+        renderShop();
         renderUI();
+      } catch (_) {}
+    }
+
+    async function creditBalanceOnServer(amount) {
+      const clean = Number(amount);
+      if (!Number.isFinite(clean) || clean <= 0) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/claim`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: uid,
+            username: tgUser && tgUser.username ? tgUser.username : null,
+            first_name: tgUser && tgUser.first_name ? tgUser.first_name : null,
+            amount: clean
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok && typeof data.balance === "number") {
+          state.balance = Number(data.balance);
+          saveState();
+          renderShop();
+          renderUI();
+        }
       } catch (_) {}
     }
 
@@ -617,54 +1151,117 @@
     }
 
     function renderShop() {
+      const tr = t();
       const container = document.getElementById("shopList");
+      const infoEl = document.getElementById("shopBalanceInfo");
+      if (infoEl) {
+        infoEl.textContent = tr.shopBalanceInfo(state.balance);
+      }
       container.innerHTML = "";
       for (const m of MINERS) {
         const owned = state.miners[m.id] || 0;
+        const canAfford = state.balance >= m.price && !isBuyingMiner;
         const row = document.createElement("div");
         row.className = "miner-item";
         row.innerHTML = `
           <div>
-            <div class="miner-name">${m.name} (куплено: ${owned})</div>
-            <div class="miner-desc">+${m.rate20m.toFixed(2)} USDT / 20 мин • Цена: $${m.price.toFixed(2)}</div>
+            <div class="miner-name">${m.name} (${tr.ownedLabel}: ${owned})</div>
+            <div class="miner-desc">+${m.rate20m.toFixed(2)} ${tr.per20mUnit} • ${tr.priceLabel}: $${m.price.toFixed(2)}</div>
           </div>
-          <button class="btn btn-green btn-small" data-buy="${m.id}">Купить</button>
+          <button class="btn btn-green btn-small" data-buy="${m.id}" ${canAfford ? "" : "disabled"}>${tr.buyBtn}</button>
         `;
         row.querySelector("button").addEventListener("click", async () => {
-          tickMining();
+          const statusEl = document.getElementById("shopStatus");
+          if (isBuyingMiner) return;
           if (state.balance < m.price) {
-            alert("Недостаточно средств на балансе для покупки " + m.name + ".");
+            statusEl.className = "status-msg err";
+            statusEl.textContent = tr.noFundsMiner(m.name);
             return;
           }
-          state.balance = Number((state.balance - m.price).toFixed(6));
-          state.miners[m.id] = owned + 1;
-          saveState();
+
+          isBuyingMiner = true;
           renderShop();
-          renderUI();
-          await syncBalanceWithServer(true);
+          statusEl.className = "status-msg";
+          statusEl.textContent = tr.buyingStatus;
+
+          try {
+            const res = await fetch(`${API_BASE_URL}/api/buy-miner`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: uid,
+                username: tgUser && tgUser.username ? tgUser.username : null,
+                first_name: tgUser && tgUser.first_name ? tgUser.first_name : null,
+                minerId: m.id
+              })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+              if (typeof data.balance === "number") {
+                state.balance = Number(data.balance);
+              }
+              if (data.miners && typeof data.miners === "object") {
+                state.miners = {
+                  nano: Number(data.miners.nano) || 0,
+                  core: Number(data.miners.core) || 0,
+                  pulse: Number(data.miners.pulse) || 0,
+                  cluster: Number(data.miners.cluster) || 0,
+                  titan: Number(data.miners.titan) || 0
+                };
+              }
+              saveState();
+              statusEl.className = "status-msg err";
+              statusEl.textContent = (data && data.error) || tr.noFundsMiner(m.name);
+              return;
+            }
+
+            state.balance = Number(data.balance);
+            if (data.miners && typeof data.miners === "object") {
+              state.miners = {
+                nano: Number(data.miners.nano) || 0,
+                core: Number(data.miners.core) || 0,
+                pulse: Number(data.miners.pulse) || 0,
+                cluster: Number(data.miners.cluster) || 0,
+                titan: Number(data.miners.titan) || 0
+              };
+            }
+            saveState();
+            statusEl.className = "status-msg";
+            statusEl.textContent = tr.boughtMiner(m.name, state.balance);
+          } catch (_) {
+            statusEl.className = "status-msg err";
+            statusEl.textContent = tr.netErrMiner;
+          } finally {
+            isBuyingMiner = false;
+            renderShop();
+            renderUI();
+          }
         });
         container.appendChild(row);
       }
     }
 
     function renderWalletAddress() {
+      const tr = t();
       const net = document.getElementById("depNetwork").value;
-      document.getElementById("walletNetworkLabel").textContent = `Адрес для перевода (${net}):`;
+      document.getElementById("walletNetworkLabel").textContent = tr.walletPrefix(net);
       document.getElementById("walletAddressDisplay").textContent = WALLET_ADDRESSES[net] || "";
     }
 
     function renderSubBonusButton() {
+      const tr = t();
       const btn = document.getElementById("subBonusBtn");
       if (state.channelBonusClaimed) {
-        btn.textContent = "✓ Бонус за подписку уже получен";
+        btn.textContent = tr.subBonusClaimedBtn;
         btn.disabled = true;
       } else {
-        btn.textContent = "✅ Я подписался — забрать +0.10 USDT";
+        btn.textContent = tr.subBonusBtn;
         btn.disabled = false;
       }
     }
 
     function renderUI() {
+      const tr = t();
       const rate20m = getRatePer20m();
       const rate1m = rate20m / CYCLE_MINUTES;
       const pct = Math.min(100, (state.balance / MIN_WITHDRAW) * 100);
@@ -672,14 +1269,17 @@
       document.getElementById("uidBadge").textContent = "UID: " + uid;
       document.getElementById("balanceDisplay").textContent = state.balance.toFixed(6) + " USDT";
       document.getElementById("speed20mDisplay").textContent = "+" + rate20m.toFixed(5) + " USDT";
-      document.getElementById("speed1mDisplay").textContent = rate1m.toFixed(7) + " USDT / мин";
+      document.getElementById("speed1mDisplay").textContent = rate1m.toFixed(7) + " " + tr.speed1mUnit;
       document.getElementById("minedDisplay").textContent = state.minedPending.toFixed(6) + " USDT";
       document.getElementById("progressPct").textContent = pct.toFixed(1) + "%";
       document.getElementById("progressFill").style.width = pct + "%";
-      document.getElementById("minersSummary").textContent =
-        `Куплено майнеров: ${getTotalMinersCount()} • Скорость: ${rate20m.toFixed(5)} USDT / 20 мин`;
+      document.getElementById("minersSummary").textContent = tr.minersSummary(getTotalMinersCount(), rate20m);
       document.getElementById("refCountDisplay").textContent = String(state.referrals || 0);
       document.getElementById("refLinkBox").textContent = refLink;
+      const shopInfo = document.getElementById("shopBalanceInfo");
+      if (shopInfo) {
+        shopInfo.textContent = tr.shopBalanceInfo(state.balance);
+      }
       renderWalletAddress();
       renderSubBonusButton();
     }
@@ -707,7 +1307,7 @@
         const res = await fetch(API_BASE_URL + "/api/ref", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: uid, inviterId })
+          body: JSON.stringify({ userId: uid, userLabel, inviterId })
         });
         const data = await res.json();
         if (res.ok && data.ok) {
@@ -718,9 +1318,10 @@
     }
 
     async function submitRequest(endpoint, bodyObj, statusEl, btn, onSuccess) {
+      const tr = t();
       btn.disabled = true;
       statusEl.className = "status-msg";
-      statusEl.textContent = "Отправка заявки...";
+      statusEl.textContent = tr.sendingReq;
 
       try {
         const res = await fetch(API_BASE_URL + endpoint, {
@@ -738,16 +1339,17 @@
         try {
           data = JSON.parse(text);
         } catch (_) {
-          throw new Error("Сервер вернул некорректный ответ");
+          throw new Error("Invalid server response");
         }
 
         if (!res.ok || !data.ok) {
-          throw new Error((data && data.error) || "Ошибка при отправке заявки");
+          throw new Error((data && data.error) || "Request error");
         }
 
         if (typeof data.balance === "number") {
-          state.balance = data.balance;
+          state.balance = Number(data.balance);
           saveState();
+          renderShop();
           renderUI();
         }
         if (typeof onSuccess === "function") {
@@ -755,15 +1357,20 @@
         }
 
         statusEl.className = "status-msg";
-        statusEl.textContent = `Заявка отправлена! Номер: ${data.id}. Ожидайте проверки администратора.`;
+        statusEl.textContent = tr.reqSent(data.id);
       } catch (err) {
         statusEl.className = "status-msg err";
-        statusEl.textContent =
-          "Ошибка: " + (err && err.message ? err.message : "не удалось связаться с сервером");
+        statusEl.textContent = tr.reqErr(err && err.message ? err.message : "Network error");
       } finally {
         btn.disabled = false;
       }
     }
+
+    document.querySelectorAll(".lang-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        applyLanguage(btn.dataset.lang);
+      });
+    });
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
@@ -771,90 +1378,91 @@
         document.querySelectorAll(".tab-page").forEach((p) => p.classList.remove("active"));
         btn.classList.add("active");
         document.getElementById(btn.dataset.tab).classList.add("active");
-        await syncBalanceWithServer(false);
+        await pullServerState();
       });
     });
 
     document.getElementById("depNetwork").addEventListener("change", renderWalletAddress);
 
     document.getElementById("copyWalletBtn").addEventListener("click", async () => {
+      const tr = t();
       const statusEl = document.getElementById("depStatus");
       const addr = document.getElementById("walletAddressDisplay").textContent;
       try {
         await copyText(addr);
         statusEl.className = "status-msg";
-        statusEl.textContent = "Адрес кошелька скопирован!";
+        statusEl.textContent = tr.copiedWallet;
       } catch (_) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Скопируйте адрес вручную.";
+        statusEl.textContent = tr.copyManual;
       }
     });
 
     document.getElementById("claimBtn").addEventListener("click", async () => {
       tickMining();
       if (state.minedPending <= 0) return;
-      state.balance = Number((state.balance + state.minedPending).toFixed(6));
+      const toClaim = Number(state.minedPending.toFixed(6));
       state.minedPending = 0;
       saveState();
       renderUI();
-      await syncBalanceWithServer(true);
+      await creditBalanceOnServer(toClaim);
     });
 
     document.getElementById("bonusBtn").addEventListener("click", async () => {
+      const tr = t();
       const statusEl = document.getElementById("bonusStatus");
       const now = Date.now();
       if (now - (state.lastDailyBonus || 0) < DAY_MS) {
         const leftMs = DAY_MS - (now - (state.lastDailyBonus || 0));
         const leftHours = Math.ceil(leftMs / (60 * 60 * 1000));
         statusEl.className = "status-msg err";
-        statusEl.textContent = `Бонус уже получен. Следующий через ~${leftHours} ч.`;
+        statusEl.textContent = tr.bonusCooldown(leftHours);
         return;
       }
-      state.balance = Number((state.balance + DAILY_BONUS_AMOUNT).toFixed(6));
       state.lastDailyBonus = now;
       saveState();
-      renderUI();
-      await syncBalanceWithServer(true);
+      await creditBalanceOnServer(DAILY_BONUS_AMOUNT);
       statusEl.className = "status-msg";
-      statusEl.textContent = "Начислено +0.001 USDT! Следующий бонус через 24 часа.";
+      statusEl.textContent = tr.bonusClaimed;
     });
 
     document.getElementById("subBonusBtn").addEventListener("click", async () => {
+      const tr = t();
       const statusEl = document.getElementById("subBonusStatus");
       if (state.channelBonusClaimed) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Бонус за подписку на @MintTetherHub уже был начислен.";
+        statusEl.textContent = tr.subBonusAlready;
         return;
       }
-      state.balance = Number((state.balance + CHANNEL_BONUS_AMOUNT).toFixed(6));
       state.channelBonusClaimed = true;
       saveState();
-      renderUI();
-      await syncBalanceWithServer(true);
+      await creditBalanceOnServer(CHANNEL_BONUS_AMOUNT);
       statusEl.className = "status-msg";
-      statusEl.textContent = "Начислено +0.10 USDT за подписку на канал @MintTetherHub.";
+      statusEl.textContent = tr.subBonusGot;
     });
 
     document.getElementById("copyRefBtn").addEventListener("click", async () => {
+      const tr = t();
       const statusEl = document.getElementById("refStatus");
       try {
         await copyText(refLink);
         statusEl.className = "status-msg";
-        statusEl.textContent = "Реферальная ссылка скопирована!";
+        statusEl.textContent = tr.copiedRef;
       } catch (_) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Скопируйте ссылку вручную из поля выше.";
+        statusEl.textContent = tr.copyManual;
       }
     });
 
     document.getElementById("depSubmitBtn").addEventListener("click", (e) => {
+      const tr = t();
       const statusEl = document.getElementById("depStatus");
       const network = document.getElementById("depNetwork").value;
       const amount = Number(document.getElementById("depAmount").value);
 
       if (!Number.isFinite(amount) || amount <= 0) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Введите корректную сумму оплаты.";
+        statusEl.textContent = tr.invalidAmount;
         return;
       }
 
@@ -870,6 +1478,7 @@
     });
 
     document.getElementById("wdrSubmitBtn").addEventListener("click", (e) => {
+      const tr = t();
       const statusEl = document.getElementById("wdrStatus");
       const network = document.getElementById("wdrNetwork").value;
       const address = document.getElementById("wdrAddress").value.trim();
@@ -877,19 +1486,19 @@
 
       if (!address) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Укажите адрес кошелька для вывода.";
+        statusEl.textContent = tr.noAddress;
         return;
       }
 
       if (!Number.isFinite(amount) || amount < MIN_WITHDRAW) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Минимальная сумма вывода составляет $35.00 USDT.";
+        statusEl.textContent = tr.minWithdrawErr;
         return;
       }
 
       if (amount > state.balance) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Недостаточно средств на балансе для вывода этой суммы.";
+        statusEl.textContent = tr.insufficientBalance;
         return;
       }
 
@@ -905,13 +1514,23 @@
       );
     });
 
-    loadState();
-    tickMining();
-    renderShop();
-    renderUI();
-    syncBalanceWithServer(true);
-    registerReferralIfNeeded();
-    setInterval(tickMining, 1000);
+    async function bootApp() {
+      loadLang();
+      loadState();
+      tickMining();
+      applyLanguage(currentLang);
+      setSplashProgress(34, t().splashLoading);
+
+      await registerReferralIfNeeded();
+      setSplashProgress(68, t().splashSync);
+      await pullServerState();
+      setSplashProgress(100, t().splashSync);
+
+      setTimeout(hideSplash, 260);
+      setInterval(tickMining, 1000);
+    }
+
+    bootApp();
   </script>
 </body>
 </html>
