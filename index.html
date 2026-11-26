@@ -231,6 +231,35 @@
       outline: none;
     }
 
+    .wallet-box {
+      background: #0d141d;
+      border: 1px solid #263649;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .wallet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .wallet-addr {
+      font-size: 12.5px;
+      color: #34d399;
+      word-break: break-all;
+      font-family: monospace;
+      margin-bottom: 8px;
+    }
+
     .ref-box {
       background: #0d141d;
       border: 1px solid #263649;
@@ -361,11 +390,21 @@
             <option value="TON">TON (USDT)</option>
           </select>
         </div>
+
+        <div class="wallet-box">
+          <div class="wallet-head">
+            <span class="wallet-label" id="walletNetworkLabel">Адрес для перевода (BEP20):</span>
+            <button type="button" class="btn btn-gray btn-small" style="margin-bottom:0;" id="copyWalletBtn">📋 Копировать</button>
+          </div>
+          <div class="wallet-addr" id="walletAddressDisplay"></div>
+          <div class="subtitle">Переведите USDT на указанный адрес, затем введите сумму и нажмите «Я оплатил».</div>
+        </div>
+
         <div class="field">
-          <label for="depAmount">Сумма (USDT)</label>
+          <label for="depAmount">Сумма оплаты (USDT)</label>
           <input type="number" id="depAmount" min="1" step="0.01" placeholder="Например, 10" />
         </div>
-        <button class="btn btn-green" id="depSubmitBtn">Отправить заявку на пополнение</button>
+        <button class="btn btn-green" id="depSubmitBtn">✅ Я оплатил — отправить заявку</button>
         <div class="status-msg" id="depStatus"></div>
       </div>
     </div>
@@ -453,7 +492,6 @@
       tg.expand();
     }
 
-    // Вставьте сюда URL вашего сервиса на Render, например: "https://minttether-bot.onrender.com"
     const API_BASE_URL = "https://minttether-backend.onrender.com";
     const BOT_USERNAME = "MintTetherBot";
     const CYCLE_MINUTES = 20;
@@ -462,6 +500,12 @@
     const DAILY_BONUS_AMOUNT = 0.001;
     const CHANNEL_BONUS_AMOUNT = 0.10;
     const DAY_MS = 24 * 60 * 60 * 1000;
+
+    const WALLET_ADDRESSES = {
+      BEP20: "0x19bc4bcabdac77fae14c2dc93563cc62c9e18d19",
+      TRC20: "TXY7vyHeZJj7KU9zFzYhvNLB9qRfyvDqCP",
+      TON: "UQAMr7OmPPKKol1vrhbFMenfRLEjmDy6vDdS5jZHfeaFeKi1"
+    };
 
     const MINERS = [
       { id: "nano", name: "Nano Rig", price: 8, rate20m: 0.05 },
@@ -519,6 +563,36 @@
       } catch (_) {}
     }
 
+    async function syncBalanceWithServer(pushLocalIfHigher = false) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/user?userId=${encodeURIComponent(uid)}`);
+        const data = await res.json();
+        if (!res.ok || !data.ok) return;
+
+        const serverBal = Number(data.balance) || 0;
+        if (pushLocalIfHigher && state.balance > serverBal) {
+          await fetch(`${API_BASE_URL}/api/sync-balance`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: uid,
+              username: tgUser && tgUser.username ? tgUser.username : null,
+              first_name: tgUser && tgUser.first_name ? tgUser.first_name : null,
+              balance: state.balance
+            })
+          });
+        } else {
+          state.balance = serverBal;
+        }
+
+        if (typeof data.referrals === "number") {
+          state.referrals = data.referrals;
+        }
+        saveState();
+        renderUI();
+      } catch (_) {}
+    }
+
     function getRatePer20m() {
       let extra = 0;
       for (const m of MINERS) {
@@ -556,7 +630,7 @@
           </div>
           <button class="btn btn-green btn-small" data-buy="${m.id}">Купить</button>
         `;
-        row.querySelector("button").addEventListener("click", () => {
+        row.querySelector("button").addEventListener("click", async () => {
           tickMining();
           if (state.balance < m.price) {
             alert("Недостаточно средств на балансе для покупки " + m.name + ".");
@@ -567,9 +641,16 @@
           saveState();
           renderShop();
           renderUI();
+          await syncBalanceWithServer(true);
         });
         container.appendChild(row);
       }
+    }
+
+    function renderWalletAddress() {
+      const net = document.getElementById("depNetwork").value;
+      document.getElementById("walletNetworkLabel").textContent = `Адрес для перевода (${net}):`;
+      document.getElementById("walletAddressDisplay").textContent = WALLET_ADDRESSES[net] || "";
     }
 
     function renderSubBonusButton() {
@@ -599,6 +680,7 @@
         `Куплено майнеров: ${getTotalMinersCount()} • Скорость: ${rate20m.toFixed(5)} USDT / 20 мин`;
       document.getElementById("refCountDisplay").textContent = String(state.referrals || 0);
       document.getElementById("refLinkBox").textContent = refLink;
+      renderWalletAddress();
       renderSubBonusButton();
     }
 
@@ -635,7 +717,7 @@
       } catch (_) {}
     }
 
-    async function submitRequest(endpoint, bodyObj, statusEl, btn) {
+    async function submitRequest(endpoint, bodyObj, statusEl, btn, onSuccess) {
       btn.disabled = true;
       statusEl.className = "status-msg";
       statusEl.textContent = "Отправка заявки...";
@@ -663,8 +745,17 @@
           throw new Error((data && data.error) || "Ошибка при отправке заявки");
         }
 
+        if (typeof data.balance === "number") {
+          state.balance = data.balance;
+          saveState();
+          renderUI();
+        }
+        if (typeof onSuccess === "function") {
+          onSuccess(data);
+        }
+
         statusEl.className = "status-msg";
-        statusEl.textContent = `Заявка отправлена! Номер: ${data.id}`;
+        statusEl.textContent = `Заявка отправлена! Номер: ${data.id}. Ожидайте проверки администратора.`;
       } catch (err) {
         statusEl.className = "status-msg err";
         statusEl.textContent =
@@ -675,24 +766,41 @@
     }
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
         document.querySelectorAll(".tab-page").forEach((p) => p.classList.remove("active"));
         btn.classList.add("active");
         document.getElementById(btn.dataset.tab).classList.add("active");
+        await syncBalanceWithServer(false);
       });
     });
 
-    document.getElementById("claimBtn").addEventListener("click", () => {
+    document.getElementById("depNetwork").addEventListener("change", renderWalletAddress);
+
+    document.getElementById("copyWalletBtn").addEventListener("click", async () => {
+      const statusEl = document.getElementById("depStatus");
+      const addr = document.getElementById("walletAddressDisplay").textContent;
+      try {
+        await copyText(addr);
+        statusEl.className = "status-msg";
+        statusEl.textContent = "Адрес кошелька скопирован!";
+      } catch (_) {
+        statusEl.className = "status-msg err";
+        statusEl.textContent = "Скопируйте адрес вручную.";
+      }
+    });
+
+    document.getElementById("claimBtn").addEventListener("click", async () => {
       tickMining();
       if (state.minedPending <= 0) return;
       state.balance = Number((state.balance + state.minedPending).toFixed(6));
       state.minedPending = 0;
       saveState();
       renderUI();
+      await syncBalanceWithServer(true);
     });
 
-    document.getElementById("bonusBtn").addEventListener("click", () => {
+    document.getElementById("bonusBtn").addEventListener("click", async () => {
       const statusEl = document.getElementById("bonusStatus");
       const now = Date.now();
       if (now - (state.lastDailyBonus || 0) < DAY_MS) {
@@ -706,11 +814,12 @@
       state.lastDailyBonus = now;
       saveState();
       renderUI();
+      await syncBalanceWithServer(true);
       statusEl.className = "status-msg";
       statusEl.textContent = "Начислено +0.001 USDT! Следующий бонус через 24 часа.";
     });
 
-    document.getElementById("subBonusBtn").addEventListener("click", () => {
+    document.getElementById("subBonusBtn").addEventListener("click", async () => {
       const statusEl = document.getElementById("subBonusStatus");
       if (state.channelBonusClaimed) {
         statusEl.className = "status-msg err";
@@ -721,6 +830,7 @@
       state.channelBonusClaimed = true;
       saveState();
       renderUI();
+      await syncBalanceWithServer(true);
       statusEl.className = "status-msg";
       statusEl.textContent = "Начислено +0.10 USDT за подписку на канал @MintTetherHub.";
     });
@@ -744,11 +854,19 @@
 
       if (!Number.isFinite(amount) || amount <= 0) {
         statusEl.className = "status-msg err";
-        statusEl.textContent = "Введите корректную сумму пополнения.";
+        statusEl.textContent = "Введите корректную сумму оплаты.";
         return;
       }
 
-      submitRequest("/api/deposit", { network, amount }, statusEl, e.currentTarget);
+      submitRequest(
+        "/api/deposit",
+        { network, amount },
+        statusEl,
+        e.currentTarget,
+        () => {
+          document.getElementById("depAmount").value = "";
+        }
+      );
     });
 
     document.getElementById("wdrSubmitBtn").addEventListener("click", (e) => {
@@ -775,13 +893,23 @@
         return;
       }
 
-      submitRequest("/api/withdraw", { network, address, amount }, statusEl, e.currentTarget);
+      submitRequest(
+        "/api/withdraw",
+        { network, address, amount },
+        statusEl,
+        e.currentTarget,
+        () => {
+          document.getElementById("wdrAddress").value = "";
+          document.getElementById("wdrAmount").value = "";
+        }
+      );
     });
 
     loadState();
     tickMining();
     renderShop();
     renderUI();
+    syncBalanceWithServer(true);
     registerReferralIfNeeded();
     setInterval(tickMining, 1000);
   </script>
