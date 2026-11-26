@@ -119,6 +119,9 @@
       font-weight: 700;
       cursor: pointer;
       transition: opacity 0.15s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
     }
 
     .btn:active {
@@ -138,6 +141,12 @@
     .btn-blue {
       background: #2563eb;
       color: #ffffff;
+    }
+
+    .btn-gray {
+      background: #1e2d3d;
+      color: #e5e7eb;
+      margin-bottom: 10px;
     }
 
     .progress-top {
@@ -389,10 +398,22 @@
       <div class="card">
         <div class="section-title">Ежедневный бонус</div>
         <div class="subtitle" style="margin-bottom: 12px;">
-          Получайте <strong>+0.001 USDT</strong> каждые 24 часа за ежедневный вход.
+          Получайте <strong>+0.001 USDT</strong> каждые 24 часа за активность.
         </div>
         <button class="btn btn-green" id="bonusBtn">🎁 Забрать бонус (+0.001 USDT)</button>
         <div class="status-msg" id="bonusStatus"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Бонус за подписку на канал</div>
+        <div class="subtitle" style="margin-bottom: 12px;">
+          Подпишитесь на <strong>@MintTetherHub</strong> и получите разовый бонус <strong>+0.10 USDT</strong>.
+        </div>
+        <a class="btn btn-gray" href="https://t.me/MintTetherHub" target="_blank" rel="noopener noreferrer">
+          🌐 Подписаться на @MintTetherHub
+        </a>
+        <button class="btn btn-blue" id="subBonusBtn">✅ Я подписался — забрать +0.10 USDT</button>
+        <div class="status-msg" id="subBonusStatus"></div>
       </div>
     </div>
 
@@ -438,6 +459,7 @@
     const BASE_RATE_PER_20M = 0.00002;
     const MIN_WITHDRAW = 35;
     const DAILY_BONUS_AMOUNT = 0.001;
+    const CHANNEL_BONUS_AMOUNT = 0.10;
     const DAY_MS = 24 * 60 * 60 * 1000;
 
     const MINERS = [
@@ -460,6 +482,7 @@
       minedPending: 0,
       lastTick: Date.now(),
       lastDailyBonus: 0,
+      channelBonusClaimed: false,
       referrals: 0,
       invitedBy: null,
       miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
@@ -475,6 +498,7 @@
           minedPending: Number.isFinite(Number(parsed.minedPending)) ? Math.max(0, Number(parsed.minedPending)) : 0,
           lastTick: Number.isFinite(Number(parsed.lastTick)) && Number(parsed.lastTick) > 0 ? Number(parsed.lastTick) : Date.now(),
           lastDailyBonus: Number.isFinite(Number(parsed.lastDailyBonus)) ? Number(parsed.lastDailyBonus) : 0,
+          channelBonusClaimed: Boolean(parsed.channelBonusClaimed),
           referrals: Number(parsed.referrals) || 0,
           invitedBy: parsed.invitedBy || null,
           miners: {
@@ -547,6 +571,17 @@
       }
     }
 
+    function renderSubBonusButton() {
+      const btn = document.getElementById("subBonusBtn");
+      if (state.channelBonusClaimed) {
+        btn.textContent = "✓ Бонус за подписку уже получен";
+        btn.disabled = true;
+      } else {
+        btn.textContent = "✅ Я подписался — забрать +0.10 USDT";
+        btn.disabled = false;
+      }
+    }
+
     function renderUI() {
       const rate20m = getRatePer20m();
       const rate1m = rate20m / CYCLE_MINUTES;
@@ -563,6 +598,7 @@
         `Куплено майнеров: ${getTotalMinersCount()} • Скорость: ${rate20m.toFixed(5)} USDT / 20 мин`;
       document.getElementById("refCountDisplay").textContent = String(state.referrals || 0);
       document.getElementById("refLinkBox").textContent = refLink;
+      renderSubBonusButton();
     }
 
     async function registerReferralIfNeeded() {
@@ -623,7 +659,8 @@
       } catch (err) {
         statusEl.className = "status-msg err";
         statusEl.textContent =
-          "Ошибка: " + (err && err.message ? err.message : "не удалось связаться с сервером");
+          "Ошибка: " + (err && err.message ? err.message : "не удалось связаться с сервером") +
+          " (проверьте, запущен ли node bot.js и открыта ли ссылка тунеля)";
       } finally {
         btn.disabled = false;
       }
@@ -663,6 +700,21 @@
       renderUI();
       statusEl.className = "status-msg";
       statusEl.textContent = "Начислено +0.001 USDT! Следующий бонус через 24 часа.";
+    });
+
+    document.getElementById("subBonusBtn").addEventListener("click", () => {
+      const statusEl = document.getElementById("subBonusStatus");
+      if (state.channelBonusClaimed) {
+        statusEl.className = "status-msg err";
+        statusEl.textContent = "Бонус за подписку на @MintTetherHub уже был начислен.";
+        return;
+      }
+      state.balance = Number((state.balance + CHANNEL_BONUS_AMOUNT).toFixed(6));
+      state.channelBonusClaimed = true;
+      saveState();
+      renderUI();
+      statusEl.className = "status-msg";
+      statusEl.textContent = "Начислено +0.10 USDT за подписку на канал @MintTetherHub.";
     });
 
     document.getElementById("copyRefBtn").addEventListener("click", async () => {
