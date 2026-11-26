@@ -453,6 +453,8 @@
       tg.expand();
     }
 
+    // Вставьте сюда URL вашего сервиса на Render, например: "https://minttether-bot.onrender.com"
+    const API_BASE_URL = "https://minttether-bot.onrender.com";
     const BOT_USERNAME = "MintTetherBot";
     const CYCLE_MINUTES = 20;
     const BASE_RATE_PER_20M = 0.00002;
@@ -471,6 +473,8 @@
 
     const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
     const uid = String((tgUser && tgUser.id) || "5224967757");
+    const userLabel = tgUser ? (tgUser.username ? "@" + tgUser.username : tgUser.first_name || "") : "";
+    const startParam = String((tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || "");
     const refLink = `https://t.me/${BOT_USERNAME}?start=ref_${uid}`;
     const STORAGE_KEY = "minttether_state_" + uid;
 
@@ -481,6 +485,7 @@
       lastDailyBonus: 0,
       channelBonusClaimed: false,
       referrals: 0,
+      invitedBy: null,
       miners: { nano: 0, core: 0, pulse: 0, cluster: 0, titan: 0 }
     };
 
@@ -496,6 +501,7 @@
           lastDailyBonus: Number.isFinite(Number(parsed.lastDailyBonus)) ? Number(parsed.lastDailyBonus) : 0,
           channelBonusClaimed: Boolean(parsed.channelBonusClaimed),
           referrals: Number(parsed.referrals) || 0,
+          invitedBy: parsed.invitedBy || null,
           miners: {
             nano: Number(parsed.miners && parsed.miners.nano) || 0,
             core: Number(parsed.miners && parsed.miners.core) || 0,
@@ -610,35 +616,62 @@
       return ok;
     }
 
-    async function submitToBot(payloadObj, textCommand, statusEl) {
-      let sent = false;
+    async function registerReferralIfNeeded() {
+      if (!startParam.startsWith("ref_") || state.invitedBy) return;
+      const inviterId = startParam.slice(4).trim();
+      if (!inviterId || inviterId === uid) return;
+
       try {
-        if (tg && typeof tg.sendData === "function") {
-          tg.sendData(JSON.stringify({ userId: uid, ...payloadObj }));
-          sent = true;
+        const res = await fetch(API_BASE_URL + "/api/ref", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: uid, inviterId })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          state.invitedBy = inviterId;
+          saveState();
         }
       } catch (_) {}
+    }
 
-      let copied = false;
-      try {
-        copied = await copyText(textCommand);
-      } catch (_) {}
-
-      const shareUrl = `https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(textCommand)}`;
+    async function submitRequest(endpoint, bodyObj, statusEl, btn) {
+      btn.disabled = true;
       statusEl.className = "status-msg";
-      statusEl.innerHTML =
-        (sent ? "Данные отправлены боту. " : "") +
-        (copied ? "Код заявки скопирован в буфер. " : "") +
-        `<br><code style="color:#93c5fd;">${textCommand}</code>` +
-        `<br><a href="${shareUrl}" style="color:#34d399;font-weight:700;">👉 Открыть @${BOT_USERNAME}</a>`;
+      statusEl.textContent = "Отправка заявки...";
 
-      setTimeout(() => {
+      try {
+        const res = await fetch(API_BASE_URL + endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: uid,
+            userLabel,
+            ...bodyObj
+          })
+        });
+
+        const text = await res.text();
+        let data;
         try {
-          if (tg && typeof tg.close === "function") {
-            tg.close();
-          }
-        } catch (_) {}
-      }, 300);
+          data = JSON.parse(text);
+        } catch (_) {
+          throw new Error("Сервер вернул некорректный ответ");
+        }
+
+        if (!res.ok || !data.ok) {
+          throw new Error((data && data.error) || "Ошибка при отправке заявки");
+        }
+
+        statusEl.className = "status-msg";
+        statusEl.textContent = `Заявка отправлена! Номер: ${data.id}`;
+      } catch (err) {
+        statusEl.className = "status-msg err";
+        statusEl.textContent =
+          "Ошибка: " + (err && err.message ? err.message : "не удалось связаться с сервером");
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
@@ -704,7 +737,7 @@
       }
     });
 
-    document.getElementById("depSubmitBtn").addEventListener("click", () => {
+    document.getElementById("depSubmitBtn").addEventListener("click", (e) => {
       const statusEl = document.getElementById("depStatus");
       const network = document.getElementById("depNetwork").value;
       const amount = Number(document.getElementById("depAmount").value);
@@ -715,11 +748,10 @@
         return;
       }
 
-      const cmd = `#DEPOSIT | UID:${uid} | NET:${network} | AMT:${amount}`;
-      submitToBot({ type: "deposit", network, amount }, cmd, statusEl);
+      submitRequest("/api/deposit", { network, amount }, statusEl, e.currentTarget);
     });
 
-    document.getElementById("wdrSubmitBtn").addEventListener("click", () => {
+    document.getElementById("wdrSubmitBtn").addEventListener("click", (e) => {
       const statusEl = document.getElementById("wdrStatus");
       const network = document.getElementById("wdrNetwork").value;
       const address = document.getElementById("wdrAddress").value.trim();
@@ -743,14 +775,14 @@
         return;
       }
 
-      const cmd = `#WITHDRAW | UID:${uid} | NET:${network} | AMT:${amount} | ADDR:${address}`;
-      submitToBot({ type: "withdraw", network, address, amount }, cmd, statusEl);
+      submitRequest("/api/withdraw", { network, address, amount }, statusEl, e.currentTarget);
     });
 
     loadState();
     tickMining();
     renderShop();
     renderUI();
+    registerReferralIfNeeded();
     setInterval(tickMining, 1000);
   </script>
 </body>
